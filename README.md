@@ -10,33 +10,30 @@
 
 ### Generic Schema
 
-These parameters only apply to the root of a schema, regardless if the schema has more than one nested type schema.
-
-#### default
-
-A `default` value is used when no input is passed for validation. `default` values will not be validated.
-```js
-var default_schema = {
-    'default': 'abc'
-};
-```
-Note: If no `default` is set, `null` will be used.
+These parameters are set at the root of a schema, regardless if the schema has more than one nested type schema.
 
 #### required
 
-Setting `required` to `true` fails the validation if no value is passed.
+Setting `required` to `true` forces a value to be passed. Defaults to `false`.
 ```js
 var required_schema = {
     'required': true
 };
 ```
-Note: If no `required` is set, `false` will be used.
-
-Note: Setting `required` to true and also including a `default`, is valid syntax, but the default will not be used. This syntax can be misleading and should be avoided.
 
 ---
 
 ### Type Schema
+
+Type schema relate to a specific data type. The data types are:
+
+* Boolean
+* Number
+* String
+* Symbol
+* Function
+* Array
+* Object
 
 A single type schema can be defined directly in the schema root. Multiple type schema must be defined within the `type_schema` property as an array.
 
@@ -70,23 +67,23 @@ var number_schema = {
 ```
 **number_min**
 
-The input number must be greater than or equal to the set `number_min` number. The default value is `undefined`.
+The input number must be greater than or equal to the set `number_min` number. Defaults to `undefined`.
 
 `'number_min': number`
 
 **number_max**
 
-The input number must be less than or equal to the set `number_max` number. The default value is `undefined`.
+The input number must be less than or equal to the set `number_max` number. Defaults to `undefined`.
 
 `'number_max': number`
 
 **number_multiple_of**
 
-The input number must be a multiple of the set `number_multiple_of` number. The default value is `undefined`.
+The input number must be a multiple of the set `number_multiple_of` number. Defaults to `undefined`.
 
 `'number_multiple_of': number`
 
-Note: You cam limit the number to an integer by setting `number_multiple_of` to `1`.
+Note: You cam limit the number to integers by setting `number_multiple_of` to `1`.
 
 </details>
 <br>
@@ -105,19 +102,19 @@ var string_schema = {
 
 **string_min_characters**
 
-The input string character count must be longer than or equal to the set `string_min_characters`. The default value is `undefined`.
+The input string character count must be longer than or equal to the set `string_min_characters`. Defaults to `undefined`.
 
 `'string_min_characters': number`
 
 **string_max_characters**
 
-The input string character count must be shorter than or equal to the set `string_max_characters`. The default value is `undefined`.
+The input string character count must be shorter than or equal to the set `string_max_characters`. Defaults to `undefined`.
 
 `'string_max_characters': number`
 
 **string_regexp_match**
 
-The input string must return a match for the regular expression string set in `string_regexp_match`. The default value is `undefined`.
+The input string must return a match for the regular expression string set in `string_regexp_match`. Defaults to `undefined`.
 
 `'string_regexp_match': string`
 
@@ -168,19 +165,19 @@ var array_schema = {
 
 **array_min_length**
 
-The input array length must be longer than or equal to the set `array_min_length`. The default value is `undefined`.
+The input array length must be longer than or equal to the set `array_min_length`. Defaults to `undefined`.
 
 `'array_min_length': number`
 
 **array_max_length**
 
-The input array length must be shorter than or equal to the set `array_max_length`. The default value is `undefined`.
+The input array length must be shorter than or equal to the set `array_max_length`. Defaults to `undefined`.
 
 `'array_max_length': number`
 
 **array_item_type_schema**
 
-Each input array item must validate using the set `array_item_type_schema`. This value can also be defined as an array of type schema. The default value is `undefined`.
+Each input array item must validate using the set `array_item_type_schema`. This value can also be defined as an array of type schema. Defaults to `undefined`.
 
 `'array_item_type_schema': object|array`
 
@@ -199,7 +196,6 @@ var object_schema = {
             'type': 'number'
         }
         'property_xyz': {
-            'default': 'qwerty',
             'type': 'string'
         }
     }

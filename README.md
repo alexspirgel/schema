@@ -90,7 +90,7 @@ The input number must be a multiple of the set `number_multiple_of` number. The 
 
 `'number_multiple_of': number`
 
-Note: You cam limit numbers to integers by setting `number_multiple_of` to `1`.
+Note: You cam limit the number to an integer by setting `number_multiple_of` to `1`.
 
 </details>
 <br>

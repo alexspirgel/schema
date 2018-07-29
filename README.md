@@ -12,7 +12,7 @@
 
 These parameters only apply to the root of a schema, regardless if the schema has more than one nested type schema.
 
-####default####
+#### default
 
 A `default` value is used when no input is passed for validation. `default` values will not be validated.
 ```js
@@ -22,7 +22,7 @@ var default_schema = {
 ```
 Note: If no `default` is set, `null` will be used.
 
-####required####
+#### required
 
 Setting `required` to `true` fails the validation if no value is passed.
 ```js
@@ -40,7 +40,7 @@ Note: Setting `required` to true and also including a `default`, is valid syntax
 
 A single type schema can be defined directly in the schema root. Multiple type schema must be defined within the `type_schema` property as an array.
 
-####type####
+#### type
 
 <details>
 

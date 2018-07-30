@@ -190,6 +190,7 @@ Each input array item must validate using the set `array_item_type_schema`. This
 ```js
 var object_schema = {
     'type': 'object',
+    'object_allow_unexpected': false,
     'object_properties': {
         'property_abc': {
             'required': true,
@@ -201,6 +202,12 @@ var object_schema = {
     }
 };
 ```
+
+**object_allow_unexpected**
+
+If set to `false`, input objects with properties not listed within `object_properties` will fail validation. Defaults to `true`.
+
+`'object_allow_unexpected': boolean`
 
 **object_properties**
 

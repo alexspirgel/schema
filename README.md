@@ -1,6 +1,8 @@
 # Schema
 
-## Terminoligy
+Schema is a JavaScript validator, meaning it will only detect if an input matches defined constraints, it will never edit any data.
+
+## Terminology
 
 **Input:** The values to be checked against the **schema**.
 
@@ -97,8 +99,7 @@ Note: You cam limit the number to integers by setting `number_multiple_of` to `1
 var string_schema = {
     'type': 'string',
     'string_min_characters': 5,
-    'string_max_characters': 100,
-    'string_regexp_match': '/dog/'
+    'string_max_characters': 100
 };
 ```
 
@@ -113,12 +114,6 @@ The input string character count must be longer than or equal to the set `string
 The input string character count must be shorter than or equal to the set `string_max_characters`. Defaults to `undefined`.
 
 `'string_max_characters': number`
-
-**string_regexp_match**
-
-The input string must return a match for the regular expression string set in `string_regexp_match`. Defaults to `undefined`.
-
-`'string_regexp_match': string`
 
 </details>
 <br>

@@ -31,18 +31,6 @@ var required_schema = {
 
 Type schema relate to a specific data type. The data types are:
 
-* Boolean
-* Number
-* String
-* Symbol
-* Function
-* Array
-* Object
-
-A single type schema can be defined directly in the schema root. Multiple type schema must be defined within the `type_schema` property as an array.
-
-#### type
-
 <details>
 
 <summary>boolean</summary>
@@ -219,7 +207,7 @@ Note: If no `type` is set, any type variable will be considered valid.
 
 #### Multiple Type Schema
 
-Schema can also be set as an array of objects for when the input can validate from more than one schema. An example of multiple type schema is an input that can be either a single value or an array of values.
+A single type schema can be defined directly in the schema root. Schema can also be set as an array of objects within the `type_schema` property for when the input can validate from more than one schema. An example of multiple type schema is an input that can be either a single value or an array of values.
 
 ```js
 var multiple_type_schema = {

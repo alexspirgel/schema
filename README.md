@@ -1,5 +1,7 @@
 # Schema
 
+## Terminoligy
+
 **Input:** The values to be checked against the **schema**.
 
 **Schema:** The set of rules used to **validate** the **input**.
@@ -217,6 +219,7 @@ Each property within the `object_properties` option represents a new full schema
 
 </details>
 <br>
+
 Note: If no `type` is set, any type variable will be considered valid.
 
 #### Multiple Type Schema

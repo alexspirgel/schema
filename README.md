@@ -6,17 +6,15 @@ Schema is a JavaScript validator, meaning it will only detect if an input matche
 
 **Input:** The values to be checked against the **schema**.
 
-**Schema:** The set of rules used to **validate** the **input**.
+**Schema:** The data model used to **validate** the **input**.
 
 **Validate:** The action of comparing the **input** to the **schema**.
 
 ## Options
 
-### Generic Schema
+These parameters are used to define the schema rule set.
 
-These parameters are set at the root of a schema, regardless if the schema has more than one nested type schema.
-
-#### required
+### required
 
 Setting `required` to `true` forces a value to be passed. Defaults to `false`.
 ```js
@@ -27,9 +25,7 @@ var required_schema = {
 
 ---
 
-### Type Schema
-
-Type schema relate to a specific data type. The data types are:
+### type
 
 <details>
 
@@ -142,7 +138,7 @@ var array_schema = {
     'type': 'array',
     'array_min_length': 2,
     'array_max_length': 6,
-    'array_item_type_schema': {
+    'array_item_schema': {
         'type': 'string'
     }
 };
@@ -160,11 +156,11 @@ The input array length must be shorter than or equal to the set `array_max_lengt
 
 `'array_max_length': number`
 
-**array_item_type_schema**
+**array_item_schema**
 
-Each input array item must validate using the set `array_item_type_schema`. This value can also be defined as an array of type schema. Defaults to `undefined`.
+Each input array item must validate using the set `array_item_schema`. This value can also be defined as an array of schema. Defaults to `undefined`.
 
-`'array_item_type_schema': object|array`
+`'array_item_schema': object|array`
 
 </details>
 <br>
@@ -205,9 +201,11 @@ Each property within the `object_properties` option represents a new full schema
 
 Note: If no `type` is set, any type variable will be considered valid.
 
-#### Multiple Type Schema
+#### Optional Schema
 
-A single type schema can be defined directly in the schema root. Schema can also be set as an array of objects within the `type_schema` property for when the input can validate from more than one schema. An example of multiple type schema is an input that can be either a single value or an array of values.
+When a value has more than one valid syntax, multiple schema can be defined. Anywhere a single schema object can be defined, so can an array of schema objects.
+
+Here is an example of optional schema:
 
 ```js
 var multiple_type_schema = {
@@ -227,6 +225,8 @@ var multiple_type_schema = {
 };
 ```
 
+This schema configuration allows for the input to be either a single value or an array of values.
+
 ## Notes:
 
 * When implementing schema into your script, it's a good idea to include the option to turn off schema validation. This is helpful for optimizing performance in production environments when the input has already been proven valid.
@@ -237,6 +237,6 @@ var multiple_type_schema = {
 
 ## Changelog:
 
-### Version 1.0.x
+### Version 0.0.1
 
 * Script creation.

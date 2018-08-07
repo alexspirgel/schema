@@ -1,5 +1,9 @@
 # Schema
 
+Schema is a JavaScript validator, meaning it will only detect if an input matches defined constraints, it will never edit any data.
+
+## Terminology
+
 **Input:** The values to be checked against the **schema**.
 
 **Schema:** The set of rules used to **validate** the **input**.
@@ -26,18 +30,6 @@ var required_schema = {
 ### Type Schema
 
 Type schema relate to a specific data type. The data types are:
-
-* Boolean
-* Number
-* String
-* Symbol
-* Function
-* Array
-* Object
-
-A single type schema can be defined directly in the schema root. Multiple type schema must be defined within the `type_schema` property as an array.
-
-#### type
 
 <details>
 
@@ -95,8 +87,7 @@ Note: You cam limit the number to integers by setting `number_multiple_of` to `1
 var string_schema = {
     'type': 'string',
     'string_min_characters': 5,
-    'string_max_characters': 100,
-    'string_regexp_match': '/dog/'
+    'string_max_characters': 100
 };
 ```
 
@@ -111,12 +102,6 @@ The input string character count must be longer than or equal to the set `string
 The input string character count must be shorter than or equal to the set `string_max_characters`. Defaults to `undefined`.
 
 `'string_max_characters': number`
-
-**string_regexp_match**
-
-The input string must return a match for the regular expression string set in `string_regexp_match`. Defaults to `undefined`.
-
-`'string_regexp_match': string`
 
 </details>
 <br>
@@ -190,6 +175,7 @@ Each input array item must validate using the set `array_item_type_schema`. This
 ```js
 var object_schema = {
     'type': 'object',
+    'object_allow_unexpected': false,
     'object_properties': {
         'property_abc': {
             'required': true,
@@ -202,6 +188,12 @@ var object_schema = {
 };
 ```
 
+**object_allow_unexpected**
+
+If set to `false`, input objects with properties not listed within `object_properties` will fail validation. Defaults to `true`.
+
+`'object_allow_unexpected': boolean`
+
 **object_properties**
 
 Each property within the `object_properties` option represents a new full schema that can include generic schema options.
@@ -210,11 +202,12 @@ Each property within the `object_properties` option represents a new full schema
 
 </details>
 <br>
+
 Note: If no `type` is set, any type variable will be considered valid.
 
 #### Multiple Type Schema
 
-Schema can also be set as an array of objects for when the input can validate from more than one schema. An example of multiple type schema is an input that can be either a single value or an array of values.
+A single type schema can be defined directly in the schema root. Schema can also be set as an array of objects within the `type_schema` property for when the input can validate from more than one schema. An example of multiple type schema is an input that can be either a single value or an array of values.
 
 ```js
 var multiple_type_schema = {

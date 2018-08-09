@@ -82,22 +82,22 @@ Note: You cam limit the number to integers by setting `number_multiple_of` to `1
 ```js
 var string_schema = {
     'type': 'string',
-    'string_min_characters': 5,
-    'string_max_characters': 100
+    'string_min': 5,
+    'string_max': 100
 };
 ```
 
-**string_min_characters**
+**string_min**
 
-The input string character count must be longer than or equal to the set `string_min_characters`. Defaults to `undefined`.
+The input string character count must be longer than or equal to the set `string_min`. Defaults to `undefined`.
 
-`'string_min_characters': number`
+`'string_min': number`
 
-**string_max_characters**
+**string_max**
 
-The input string character count must be shorter than or equal to the set `string_max_characters`. Defaults to `undefined`.
+The input string character count must be shorter than or equal to the set `string_max`. Defaults to `undefined`.
 
-`'string_max_characters': number`
+`'string_max': number`
 
 </details>
 <br>

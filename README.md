@@ -82,22 +82,22 @@ Note: You cam limit the number to integers by setting `number_multiple_of` to `1
 ```js
 var string_schema = {
     'type': 'string',
-    'string_min': 5,
-    'string_max': 100
+    'string_min_characters': 5,
+    'string_max_characters': 100
 };
 ```
 
-**string_min**
+**string_min_characters**
 
-The input string character count must be longer than or equal to the set `string_min`. Defaults to `undefined`.
+The input string character count must be longer than or equal to the set `string_min_characters`. Defaults to `undefined`.
 
-`'string_min': number`
+`'string_min_characters': number`
 
-**string_max**
+**string_max_characters**
 
-The input string character count must be shorter than or equal to the set `string_max`. Defaults to `undefined`.
+The input string character count must be shorter than or equal to the set `string_max_characters`. Defaults to `undefined`.
 
-`'string_max': number`
+`'string_max_characters': number`
 
 </details>
 <br>
@@ -171,8 +171,8 @@ Each input array item must validate using the set `array_item_schema`. This valu
 ```js
 var object_schema = {
     'type': 'object',
-    'object_allow_unexpected': false,
-    'object_properties': {
+    "object_allow_unexpected": true,
+    'object_property_schema': {
         'property_abc': {
             'required': true,
             'type': 'number'
@@ -190,11 +190,11 @@ If set to `false`, input objects with properties not listed within `object_prope
 
 `'object_allow_unexpected': boolean`
 
-**object_properties**
+**object_property_schema**
 
-Each property within the `object_properties` option represents a new full schema that can include generic schema options.
+Each property within the `object_property_schema` option represents a new full schema that can include generic schema options.
 
-`'object_properties': object`
+`'object_property_schema': object`
 
 </details>
 <br>

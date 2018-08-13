@@ -6,147 +6,318 @@
 </head>
 <body>
 	<script type="text/javascript">
+		const log_result = (result) => {
+			if(result) {
+				console.log('%ctrue', 'background-color:rgba(0,255,0,0.5);');
+			}
+			else {
+				console.log('%cfalse', 'background-color:rgba(255,0,0,0.5);');
+			}
+		};
 		const schema_test = (schema_object) => {
 			console.log('value: '+true);
-			schema_object.validate(true);
+			log_result(schema_object.validate(true));
 
 			console.log('value: '+false);
-			schema_object.validate(false);
+			log_result(schema_object.validate(false));
 
 			console.log('value: '+'abc');
-			schema_object.validate('abc');
+			log_result(schema_object.validate('abc'));
 
-			console.log('value: '+'');
-			schema_object.validate('');
+			console.log('value: (empty string)');
+			log_result(schema_object.validate(''));
 
-			console.log('value: '+' ');
-			schema_object.validate(' ');
+			console.log('value: (single space string)');
+			log_result(schema_object.validate(' '));
 
 			console.log('value: '+1);
-			schema_object.validate(1);
+			log_result(schema_object.validate(1));
 
 			console.log('value: '+0);
-			schema_object.validate(0);
+			log_result(schema_object.validate(0));
 
 			console.log('value: '+-5.238756);
-			schema_object.validate(-5.238756);
+			log_result(schema_object.validate(-5.238756));
 
 			console.log('value: '+12345);
-			schema_object.validate(12345);
+			log_result(schema_object.validate(12345));
 
 			console.log('value: '+'Symbol()');
-			schema_object.validate(Symbol());
+			log_result(schema_object.validate(Symbol()));
 
 			console.log('value: '+'function(){}');
-			schema_object.validate(function(){});
+			log_result(schema_object.validate(function(){}));
 
 			console.log('value: []');
-			schema_object.validate([]);
+			log_result(schema_object.validate([]));
+
+			console.log('value: [1,2,3,2]');
+			log_result(schema_object.validate([1,2,3,2]));
+
+			console.log('value: [1,"a"]');
+			log_result(schema_object.validate([1,"a"]));
 
 			console.log('value: {}');
-			schema_object.validate({});
+			log_result(schema_object.validate({}));
 
-			console.log('value: (empty)');
-			schema_object.validate();
+			console.log('value: {"a":1,"b":2,"c":3}');
+			log_result(schema_object.validate({"a":1,"b":2,"c":3}));
+
+			console.log('value: {"a":1,"b":true,"c":[]}');
+			log_result(schema_object.validate({"a":1,"b":true,"c":[]}));
+
+			console.log('value: (nothing)');
+			log_result(schema_object.validate());
 
 			console.log('value: undefined');
-			schema_object.validate(undefined);
+			log_result(schema_object.validate(undefined));
 
 			console.log('value: '+null);
-			schema_object.validate(null);
+			log_result(schema_object.validate(null));
 
 			console.log('value: '+NaN);
-			schema_object.validate(NaN);
+			log_result(schema_object.validate(NaN));
 		};
 
-		const schema_blank = new Schema({});
 		console.log('--------------------------------------------------');
+		const schema_blank = new Schema({});
 		console.log('schema_blank:');
 		console.log(schema_blank);
 		schema_test(schema_blank);
 
+		console.log('--------------------------------------------------');
 		const schema_required_false = new Schema({
 			"required": false
 		});
-		console.log('--------------------------------------------------');
 		console.log('schema_required_false:');
 		console.log(schema_required_false);
 		schema_test(schema_required_false);
 
+		console.log('--------------------------------------------------');
 		const schema_required_true = new Schema({
 			"required": true
 		});
-		console.log('--------------------------------------------------');
 		console.log('schema_required_true:');
 		console.log(schema_required_true);
 		schema_test(schema_required_true);
 
+		console.log('--------------------------------------------------');
 		const schema_type_boolean = new Schema({
 			"type": "boolean"
 		});
-		console.log('--------------------------------------------------');
 		console.log('schema_type_boolean:');
 		console.log(schema_type_boolean);
 		schema_test(schema_type_boolean);
 
+		console.log('--------------------------------------------------');
 		const schema_type_number = new Schema({
 			"type": "number"
 		});
-		console.log('--------------------------------------------------');
 		console.log('schema_type_number:');
 		console.log(schema_type_number);
 		schema_test(schema_type_number);
 
+		console.log('--------------------------------------------------');
 		const schema_type_number_min = new Schema({
 			"type": "number",
 			"number_min": 0
 		});
-		console.log('--------------------------------------------------');
 		console.log('schema_type_number_min:');
 		console.log(schema_type_number_min);
 		schema_test(schema_type_number_min);
 
+		console.log('--------------------------------------------------');
 		const schema_type_number_max = new Schema({
 			"type": "number",
 			"number_max": 2
 		});
-		console.log('--------------------------------------------------');
 		console.log('schema_type_number_max:');
 		console.log(schema_type_number_max);
 		schema_test(schema_type_number_max);
 
+		console.log('--------------------------------------------------');
 		const schema_type_number_multiple = new Schema({
 			"type": "number",
 			"number_multiple_of": 5
 		});
-		console.log('--------------------------------------------------');
 		console.log('schema_type_number_multiple:');
 		console.log(schema_type_number_multiple);
 		schema_test(schema_type_number_multiple);
 
+		console.log('--------------------------------------------------');
+		const schema_type_string = new Schema({
+			"type": "string"
+		});
+		console.log('schema_type_string:');
+		console.log(schema_type_string);
+		schema_test(schema_type_string);
+
+		console.log('--------------------------------------------------');
+		const schema_type_string_min = new Schema({
+			"type": "string",
+			"string_min_characters": 3
+		});
+		console.log('schema_type_string_min:');
+		console.log(schema_type_string_min);
+		schema_test(schema_type_string_min);
+
+		console.log('--------------------------------------------------');
+		const schema_type_string_max = new Schema({
+			"type": "string",
+			"string_max_characters": 3
+		});
+		console.log('schema_type_string_max:');
+		console.log(schema_type_string_max);
+		schema_test(schema_type_string_max);
+
+		console.log('--------------------------------------------------');
+		const schema_type_string_matches = new Schema({
+			"type": "string",
+			"string_matches": 'abc+'
+		});
+		console.log('schema_type_string_matches:');
+		console.log(schema_type_string_matches);
+		schema_test(schema_type_string_matches);
+
+		console.log('--------------------------------------------------');
 		const schema_type_symbol = new Schema({
 			"type": "symbol"
 		});
-		console.log('--------------------------------------------------');
 		console.log('schema_type_symbol:');
 		console.log(schema_type_symbol);
 		schema_test(schema_type_symbol);
 
+		console.log('--------------------------------------------------');
 		const schema_type_function = new Schema({
 			"type": "function"
 		});
-		console.log('--------------------------------------------------');
 		console.log('schema_type_function:');
 		console.log(schema_type_function);
 		schema_test(schema_type_function);
 
+		console.log('--------------------------------------------------');
+		const schema_type_multiple_types = new Schema([
+			{
+				"type": "boolean"
+			},
+			{
+				"type": "number"
+			}
+		]);
+		console.log('schema_type_multiple_types:');
+		console.log(schema_type_multiple_types);
+		schema_test(schema_type_multiple_types);
+
+		console.log('--------------------------------------------------');
 		const schema_type_array = new Schema({
 			"type": "array"
 		});
-		console.log('--------------------------------------------------');
 		console.log('schema_type_array:');
 		console.log(schema_type_array);
 		schema_test(schema_type_array);
+
+		console.log('--------------------------------------------------');
+		const schema_type_array_min = new Schema({
+			"type": "array",
+			"array_min_length": 3
+		});
+		console.log('schema_type_array_min:');
+		console.log(schema_type_array_min);
+		schema_test(schema_type_array_min);
+
+		console.log('--------------------------------------------------');
+		const schema_type_array_max = new Schema({
+			"type": "array",
+			"array_max_length": 2
+		});
+		console.log('schema_type_array_max:');
+		console.log(schema_type_array_max);
+		schema_test(schema_type_array_max);
+
+		console.log('--------------------------------------------------');
+		const schema_type_array_items_unique = new Schema({
+			"type": "array",
+			"array_items_unique": true
+		});
+		console.log('schema_type_array_items_unique:');
+		console.log(schema_type_array_items_unique);
+		schema_test(schema_type_array_items_unique);
+
+		// console.log('--------------------------------------------------');
+		// const schema_type_array_items_schema = new Schema({
+		// 	"type": "array",
+		// 	"array_items_schema": {
+		// 		"type": "number"
+		// 	}
+		// });
+		// console.log('schema_type_array_items_schema:');
+		// console.log(schema_type_array_items_schema);
+		// schema_test(schema_type_array_items_schema);
+
+		// console.log('--------------------------------------------------');
+		// const schema_type_array_item_multiple_schema = new Schema({
+		// 	"type": "array",
+		// 	"array_items_schema": [
+		// 		{
+		// 			"type": "number"
+		// 		},
+		// 		{
+		// 			"type": "string"
+		// 		}
+		// 	]
+		// });
+		// console.log('schema_type_array_item_multiple_schema:');
+		// console.log(schema_type_array_item_multiple_schema);
+		// schema_test(schema_type_array_item_multiple_schema);
+
+		// console.log('--------------------------------------------------');
+		// const schema_type_object = new Schema({
+		// 	"type": "object"
+		// });
+		// console.log('schema_type_object:');
+		// console.log(schema_type_object);
+		// schema_test(schema_type_object);
+
+		// console.log('--------------------------------------------------');
+		// const schema_type_object_property_schema = new Schema({
+		// 	"type": "object",
+		// 	"object_property_schema": {
+		// 		"a": {
+		// 			"type": "number"
+		// 		},
+		// 		"b": {
+		// 			"type": "boolean"
+		// 		},
+		// 		"c": {
+		// 			"type": "array"
+		// 		}
+		// 	}
+		// });
+		// console.log('schema_type_object_property_schema:');
+		// console.log(schema_type_object_property_schema);
+		// schema_test(schema_type_object_property_schema);
+
+		// console.log('--------------------------------------------------');
+		// const schema_type_object_property_schema_required = new Schema({
+		// 	"type": "object",
+		// 	"object_property_schema": {
+		// 		"a": {
+		// 			"required": true,
+		// 			"type": "number"
+		// 		},
+		// 		"b": {
+		// 			"required": true,
+		// 			"type": "boolean"
+		// 		},
+		// 		"c": {
+		// 			"required": true,
+		// 			"type": "array"
+		// 		}
+		// 	}
+		// });
+		// console.log('schema_type_object_property_schema_required:');
+		// console.log(schema_type_object_property_schema_required);
+		// schema_test(schema_type_object_property_schema_required);
 	</script>
 
 </body>

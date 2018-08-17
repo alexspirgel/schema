@@ -243,81 +243,98 @@
 		console.log(schema_type_array_items_unique);
 		schema_test(schema_type_array_items_unique);
 
-		// console.log('--------------------------------------------------');
-		// const schema_type_array_items_schema = new Schema({
-		// 	"type": "array",
-		// 	"array_items_schema": {
-		// 		"type": "number"
-		// 	}
-		// });
-		// console.log('schema_type_array_items_schema:');
-		// console.log(schema_type_array_items_schema);
-		// schema_test(schema_type_array_items_schema);
+		console.log('--------------------------------------------------');
+		const schema_type_array_items_schema = new Schema({
+			"type": "array",
+			"array_items_schema": {
+				"type": "number"
+			}
+		});
+		console.log('schema_type_array_items_schema:');
+		console.log(schema_type_array_items_schema);
+		schema_test(schema_type_array_items_schema);
 
-		// console.log('--------------------------------------------------');
-		// const schema_type_array_item_multiple_schema = new Schema({
-		// 	"type": "array",
-		// 	"array_items_schema": [
-		// 		{
-		// 			"type": "number"
-		// 		},
-		// 		{
-		// 			"type": "string"
-		// 		}
-		// 	]
-		// });
-		// console.log('schema_type_array_item_multiple_schema:');
-		// console.log(schema_type_array_item_multiple_schema);
-		// schema_test(schema_type_array_item_multiple_schema);
+		console.log('--------------------------------------------------');
+		const schema_type_array_item_multiple_schema = new Schema({
+			"type": "array",
+			"array_items_schema": [
+				{
+					"type": "number"
+				},
+				{
+					"type": "string"
+				}
+			]
+		});
+		console.log('schema_type_array_item_multiple_schema:');
+		console.log(schema_type_array_item_multiple_schema);
+		schema_test(schema_type_array_item_multiple_schema);
 
-		// console.log('--------------------------------------------------');
-		// const schema_type_object = new Schema({
-		// 	"type": "object"
-		// });
-		// console.log('schema_type_object:');
-		// console.log(schema_type_object);
-		// schema_test(schema_type_object);
+		console.log('--------------------------------------------------');
+		const schema_type_object = new Schema({
+			"type": "object"
+		});
+		console.log('schema_type_object:');
+		console.log(schema_type_object);
+		schema_test(schema_type_object);
 
-		// console.log('--------------------------------------------------');
-		// const schema_type_object_property_schema = new Schema({
-		// 	"type": "object",
-		// 	"object_property_schema": {
-		// 		"a": {
-		// 			"type": "number"
-		// 		},
-		// 		"b": {
-		// 			"type": "boolean"
-		// 		},
-		// 		"c": {
-		// 			"type": "array"
-		// 		}
-		// 	}
-		// });
-		// console.log('schema_type_object_property_schema:');
-		// console.log(schema_type_object_property_schema);
-		// schema_test(schema_type_object_property_schema);
+		console.log('--------------------------------------------------');
+		const schema_type_object_property_schema = new Schema({
+			"type": "object",
+			"object_property_schema": {
+				"a": {
+					"type": "number"
+				},
+				"b": {
+					"type": "boolean"
+				},
+				"c": {
+					"type": "array"
+				}
+			}
+		});
+		console.log('schema_type_object_property_schema:');
+		console.log(schema_type_object_property_schema);
+		schema_test(schema_type_object_property_schema);
 
-		// console.log('--------------------------------------------------');
-		// const schema_type_object_property_schema_required = new Schema({
-		// 	"type": "object",
-		// 	"object_property_schema": {
-		// 		"a": {
-		// 			"required": true,
-		// 			"type": "number"
-		// 		},
-		// 		"b": {
-		// 			"required": true,
-		// 			"type": "boolean"
-		// 		},
-		// 		"c": {
-		// 			"required": true,
-		// 			"type": "array"
-		// 		}
-		// 	}
-		// });
-		// console.log('schema_type_object_property_schema_required:');
-		// console.log(schema_type_object_property_schema_required);
-		// schema_test(schema_type_object_property_schema_required);
+		console.log('--------------------------------------------------');
+		const schema_type_object_property_schema_required = new Schema({
+			"type": "object",
+			"object_property_schema": {
+				"a": {
+					"required": true,
+					"type": "number"
+				},
+				"b": {
+					"required": true,
+					"type": "boolean"
+				},
+				"c": {
+					"required": true,
+					"type": "array"
+				}
+			}
+		});
+		console.log('schema_type_object_property_schema_required:');
+		console.log(schema_type_object_property_schema_required);
+		schema_test(schema_type_object_property_schema_required);
+
+		console.log('--------------------------------------------------');
+		const schema_type_object_allow_unexpected = new Schema({
+			"type": "object",
+			"object_property_schema": {
+				"a": {
+					"type": "number"
+				},
+				"b": {
+					"type": "boolean"
+				}
+			},
+			"object_allow_unexpected": false
+		});
+		console.log('schema_type_object_allow_unexpected:');
+		console.log(schema_type_object_allow_unexpected);
+		schema_test(schema_type_object_allow_unexpected);
 	</script>
 
 </body>

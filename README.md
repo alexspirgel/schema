@@ -138,6 +138,7 @@ var array_schema = {
     'type': 'array',
     'array_min_length': 2,
     'array_max_length': 6,
+    'array_items_unique': true,
     'array_item_schema': {
         'type': 'string'
     }
@@ -156,6 +157,12 @@ The input array length must be shorter than or equal to the set `array_max_lengt
 
 `'array_max_length': number`
 
+**array_items_unique**
+
+If set to `true`, input arrays with 2 or more items with the same value will fail validation. Defaults to `false`.
+
+`'array_items_unique': boolean`
+
 **array_item_schema**
 
 Each input array item must validate using the set `array_item_schema`. This value can also be defined as an array of schema. Defaults to `undefined`.
@@ -171,7 +178,8 @@ Each input array item must validate using the set `array_item_schema`. This valu
 ```js
 var object_schema = {
     'type': 'object',
-    "object_allow_unexpected": true,
+    'object_allow_unexpected': true,
+    'object_unique_values': true,
     'object_property_schema': {
         'property_abc': {
             'required': true,
@@ -189,6 +197,12 @@ var object_schema = {
 If set to `false`, input objects with properties not listed within `object_properties` will fail validation. Defaults to `true`.
 
 `'object_allow_unexpected': boolean`
+
+**object_unique_values**
+
+If set to `true`, input objects with a property value equal to another property value on the same object will fail validation. Defaults to `false`.
+
+`'object_unique_values': boolean`
 
 **object_property_schema**
 

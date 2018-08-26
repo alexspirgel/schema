@@ -9,6 +9,7 @@ const Schema = class {
 	 * Create a schema with the input model.
 	 * @param {object} model - The schema blueprints.
 	 */
+
 	constructor(model) {
 		this.model = model;
 	}
@@ -240,10 +241,10 @@ const Schema = class {
 						if(model.array_items_unique) {
 							// For each item in the input array.
 							for(let input_item = 0; input_item < input.length; input_item++) {
-								let this_item = input[input_item];
+								const this_item = input[input_item];
 								// For each remaining item in the input array.
 								for(let inner_input_item = input_item + 1; inner_input_item < input.length; inner_input_item++) {
-									let this_inner_item = input[inner_input_item];
+									const this_inner_item = input[inner_input_item];
 									// If the current item matches the inner item.
 									if(this_item === this_inner_item) {
 										return false;
@@ -288,12 +289,10 @@ const Schema = class {
 						}
 						// If the object allow unexpected option is set to false.
 						if(model.object_allow_unexpected === false) {
-							// Initialize schema property list.
-							let schema_properties = [];
 							// If object property schema is set.
 							if(model.object_property_schema) {
 								// Get an array of all properties of the object property schema.
-								schema_properties = Object.getOwnPropertyNames(model.object_property_schema);
+								const schema_properties = Object.getOwnPropertyNames(model.object_property_schema);
 							}
 							// Get an array of all properties on the input object.
 							const input_properties = Object.getOwnPropertyNames(input);
@@ -302,6 +301,25 @@ const Schema = class {
 								// If the property does not exist within the defined schema properties.
 								if(schema_properties.indexOf(input_properties[input_property]) < 0) {
 									return false;
+								}
+							}
+						}
+						// If the object unique values option is set.
+						if(model.object_unique_values) {
+							// Get an array of all properties on the input object.
+							const input_properties = Object.getOwnPropertyNames(input);
+							// For each property on the input object.
+							for(let input_property = 0; input_property < input_properties.length; input_property++) {
+								const this_input_property = input_properties[input_property];
+								const this_input_value = input[this_input_property];
+								// For each remaining property in the input object.
+								for(let inner_input_property = input_property + 1; inner_input_property < input_properties.length; inner_input_property++) {
+									const this_inner_input_property = input_properties[inner_input_property];
+									const this_inner_input_value = input[this_inner_input_property];
+									// If an input value equals another input value.
+									if(this_input_value === this_inner_input_value) {
+										return false;
+									}
 								}
 							}
 						}

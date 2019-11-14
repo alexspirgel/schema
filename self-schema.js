@@ -1,39 +1,47 @@
+// required
 const requiredSchema = {
 	type: 'boolean'
 };
 
+// exactValues
+const exactValuesTypeSchema = [
+	'boolean',
+	'number',
+	'string'
+];
 const exactValueSchema = [
 	{
-		type: [
-			'boolean',
-			'number',
-			'string'
-		]
+		type: exactValuesTypeSchema
 	},
 	{
 		type: 'array',
 		itemSchema: {
-			type: [
-				'boolean',
-				'number',
-				'string'
-			]
+			type: exactValuesTypeSchema
 		}
 	}
 ];
 
-const typeSchema = {
-	type: 'string',
-	exactValue: [
-		'boolean',
-		'number',
-		'string',
-		'function',
-		'array',
-		'object'
-	]
-};
+// type
+const typeExactValuesSchema = [
+	'boolean',
+	'number',
+	'string',
+	'function',
+	'array',
+	'object'
+];
+const typeSchema = [
+	{
+		type: 'string',
+		exactValue: typeExactValuesSchema
+	},
+	type: 'array',
+	itemSchema: {
+		exactValue: typeExactValuesSchema
+	}
+];
 
+// greaterThan
 const greaterThanSchema = {
 	type: 'number',
 	dependant: {

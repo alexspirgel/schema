@@ -35,9 +35,11 @@ const typeSchema = [
 		type: 'string',
 		exactValue: typeExactValuesSchema
 	},
-	type: 'array',
-	itemSchema: {
-		exactValue: typeExactValuesSchema
+	{
+		type: 'array',
+		itemSchema: {
+			exactValue: typeExactValuesSchema
+		}
 	}
 ];
 

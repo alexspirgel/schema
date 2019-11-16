@@ -10,7 +10,7 @@ This has the side-effect of requiring these properties to be encased in quotes f
 */
 
 // Not specific to a type
-{
+const all = {
 	required: true,
 	custom: {
 		test: (value) => {
@@ -40,12 +40,12 @@ This has the side-effect of requiring these properties to be encased in quotes f
 }
 
 //
-{
+const boolean = {
 	type: 'boolean',
 }
 
 //
-{
+const number = {
 	type: 'number',
 	greaterThan: -1,
 	greaterThanOrEqualTo: 0,
@@ -55,21 +55,25 @@ This has the side-effect of requiring these properties to be encased in quotes f
 }
 
 //
-{
+const string = {
 	type: 'string',
 	minimumLength: 5,
 	maximumLength: 25
 }
 
 //
-{
+const array = {
+	type: 'array',
+	itemSchema: {}
+}
+
+//
+const object = {
 	type: 'object',
 	instance: Element,
-	isArray: false,
 	allowUnvalidated: true,
 	propertySchema: {
-		property1: {}
+		property1: {},
 		property2: {}
-		...
 	}
 }

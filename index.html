@@ -1,88 +1,64 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Schema</title>
-	<script type="text/javascript" src="schema.js"></script>
-</head>
-<body>
-	<script type="text/javascript">
-		const log_result = (result) => {
-			if(result) {
-				console.log('%ctrue', 'background-color:rgba(0,255,0,0.5);');
+	<head>
+		<title>Schema</title>
+		<script type="text/javascript" src="index.js"></script>
+		<style>
+			body {
+				background: gray;
 			}
-			else {
-				console.log('%cfalse', 'background-color:rgba(255,0,0,0.5);');
-			}
-		};
-		const schema_test = (schema_object) => {
-			console.log('value: '+true);
-			log_result(schema_object.validate(true));
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript">
+			/*
+				validateType
+			*/
 
-			console.log('value: '+false);
-			log_result(schema_object.validate(false));
+			// Boolean
+			Schema.validateType(true, 'boolean') ? true : console.warn('Fail');
+			Schema.validateType(1, 'boolean') ? console.warn('Fail') : true;
+			Schema.validateType('a', 'boolean') ? console.warn('Fail') : true;
+			Schema.validateType(() => {}, 'boolean') ? console.warn('Fail') : true;
+			Schema.validateType([], 'boolean') ? console.warn('Fail') : true;
+			Schema.validateType({}, 'boolean') ? console.warn('Fail') : true;
+			// Number
+			Schema.validateType(true, 'number') ? console.warn('Fail') : true;
+			Schema.validateType(1, 'number') ? true : console.warn('Fail');
+			Schema.validateType('a', 'number') ? console.warn('Fail') : true;
+			Schema.validateType(() => {}, 'number') ? console.warn('Fail') : true;
+			Schema.validateType([], 'number') ? console.warn('Fail') : true;
+			Schema.validateType({}, 'number') ? console.warn('Fail') : true;
+			// String
+			Schema.validateType(true, 'string') ? console.warn('Fail') : true;
+			Schema.validateType(1, 'string') ? console.warn('Fail') : true;
+			Schema.validateType('a', 'string') ? true : console.warn('Fail');
+			Schema.validateType(() => {}, 'string') ? console.warn('Fail') : true;
+			Schema.validateType([], 'string') ? console.warn('Fail') : true;
+			Schema.validateType({}, 'string') ? console.warn('Fail') : true;
+			// Function
+			Schema.validateType(true, 'function') ? console.warn('Fail') : true;
+			Schema.validateType(1, 'function') ? console.warn('Fail') : true;
+			Schema.validateType('a', 'function') ? console.warn('Fail') : true;
+			Schema.validateType(() => {}, 'function') ? true : console.warn('Fail');
+			Schema.validateType([], 'function') ? console.warn('Fail') : true;
+			Schema.validateType({}, 'function') ? console.warn('Fail') : true;
+			// Array
+			Schema.validateType(true, 'array') ? console.warn('Fail') : true;
+			Schema.validateType(1, 'array') ? console.warn('Fail') : true;
+			Schema.validateType('a', 'array') ? console.warn('Fail') : true;
+			Schema.validateType(() => {}, 'array') ? console.warn('Fail') : true;
+			Schema.validateType([], 'array') ? true : console.warn('Fail');
+			Schema.validateType({}, 'array') ? console.warn('Fail') : true;
+			// Object
+			Schema.validateType(true, 'object') ? console.warn('Fail') : true;
+			Schema.validateType(1, 'object') ? console.warn('Fail') : true;
+			Schema.validateType('a', 'object') ? console.warn('Fail') : true;
+			Schema.validateType(() => {}, 'object') ? console.warn('Fail') : true;
+			Schema.validateType([], 'object') ? console.warn('Fail') : true;
+			Schema.validateType({}, 'object') ? true : console.warn('Fail');
 
-			console.log('value: '+'abc');
-			log_result(schema_object.validate('abc'));
-
-			console.log('value: (empty string)');
-			log_result(schema_object.validate(''));
-
-			console.log('value: (single space string)');
-			log_result(schema_object.validate(' '));
-
-			console.log('value: '+1);
-			log_result(schema_object.validate(1));
-
-			console.log('value: '+0);
-			log_result(schema_object.validate(0));
-
-			console.log('value: '+-5.238756);
-			log_result(schema_object.validate(-5.238756));
-
-			console.log('value: '+12345);
-			log_result(schema_object.validate(12345));
-
-			console.log('value: '+NaN);
-			log_result(schema_object.validate(NaN));
-
-			console.log('value: []');
-			log_result(schema_object.validate([]));
-
-			console.log('value: [1,2,3,2]');
-			log_result(schema_object.validate([1,2,3,2]));
-
-			console.log('value: {}');
-			log_result(schema_object.validate({}));
-
-			console.log('value: {"a":1,"b":true,"c":[]}');
-			log_result(schema_object.validate({"a":1,"b":true,"c":[]}));
-
-			console.log('value: (nothing)');
-			log_result(schema_object.validate());
-
-			console.log('value: undefined');
-			log_result(schema_object.validate(undefined));
-
-			console.log('value: '+null);
-			log_result(schema_object.validate(null));
-		};
-
-		console.log('--------------------------------------------------');
-		const schema_example = new Schema({
-			"type": "object",
-			"object_property_schema":{
-				"a": {
-					"required": true
-				},
-				"c": {
-					"required": true
-				}
-			}
-		});
-		console.log('schema_example:');
-		console.log(schema_example);
-		schema_test(schema_example);
-	</script>
-
-</body>
+			console.log('All tests have finished.');
+		</script>
+	</body>
 </html>

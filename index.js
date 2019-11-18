@@ -48,11 +48,42 @@ const Schema = class {
 	}
 
 	static _validate(input, model) {
-		for (const property in model) {
-			if (property === 'type') {
-				this.validateType(input, model[property]);
+		// If required is not true.
+		if (model.required !== true) {
+			// if the input is undefined or null.
+			if (typeof input === 'undefined' || input === null) {
+				return true;
 			}
 		}
+		// For each property in the model.
+		for (const property in model) {
+			if (property === 'required') {
+				if (!this.validateRequired(input, model[property])) {
+					return false;
+				}
+			}
+			else if (property === 'type') {
+				if (!this.validateType(input, model[property])) {
+					return false;
+				}
+			}
+		}
+	}
+
+	static validateRequired(input, required) {
+		// If required is true.
+		if (required === true) {
+			// If input is not undefined and is not null.
+			if (typeof input !== 'undefined' && input !== null) {
+				return true;
+			}
+			// If the input is undefined or null.
+			else {
+				return false;
+			}
+		}
+		// If required is not true. Always return true.
+		return true;
 	}
 
 	static validateType(input, type) {
@@ -82,14 +113,20 @@ const Schema = class {
 			}
 		}
 		else if (type === 'object') {
-			// If input is an object, but not an array.
-			if (typeof input === 'object' && !Array.isArray(input)) {
+			// If input is an object, not an array, and not null.
+			if (typeof input === 'object' && !Array.isArray(input) && input !== null) {
 				return true;
 			}
 		}
 		return false;
 	}
 
+	static validateCustom(input, custom) {
+		if (custom(input)) {
+			return true;
+		}
+		return false;
+	}
 
 
 

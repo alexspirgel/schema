@@ -11,6 +11,41 @@
 	</head>
 	<body>
 		<script type="text/javascript">
+
+			console.log('Starting tests...');
+
+			/*
+				validateRequired
+			*/
+
+			// True
+			Schema.validateRequired(true, true) ? true : console.warn('Fail');
+			Schema.validateRequired(1, true) ? true : console.warn('Fail');
+			Schema.validateRequired('a', true) ? true : console.warn('Fail');
+			Schema.validateRequired(() => {}, true) ? true : console.warn('Fail');
+			Schema.validateRequired([], true) ? true : console.warn('Fail');
+			Schema.validateRequired({}, true) ? true : console.warn('Fail');
+			Schema.validateRequired(null, true) ? console.warn('Fail') : true;
+			Schema.validateRequired(undefined, true) ? console.warn('Fail') : true;
+			// False
+			Schema.validateRequired(true, false) ? true : console.warn('Fail');
+			Schema.validateRequired(1, false) ? true : console.warn('Fail');
+			Schema.validateRequired('a', false) ? true : console.warn('Fail');
+			Schema.validateRequired(() => {}, false) ? true : console.warn('Fail');
+			Schema.validateRequired([], false) ? true : console.warn('Fail');
+			Schema.validateRequired({}, false) ? true : console.warn('Fail');
+			Schema.validateRequired(null, false) ? true : console.warn('Fail');
+			Schema.validateRequired(undefined, false) ? true : console.warn('Fail');
+			// Undefined
+			Schema.validateRequired(true, undefined) ? true : console.warn('Fail');
+			Schema.validateRequired(1, undefined) ? true : console.warn('Fail');
+			Schema.validateRequired('a', undefined) ? true : console.warn('Fail');
+			Schema.validateRequired(() => {}, undefined) ? true : console.warn('Fail');
+			Schema.validateRequired([], undefined) ? true : console.warn('Fail');
+			Schema.validateRequired({}, undefined) ? true : console.warn('Fail');
+			Schema.validateRequired(null, undefined) ? true : console.warn('Fail');
+			Schema.validateRequired(undefined, undefined) ? true : console.warn('Fail');
+
 			/*
 				validateType
 			*/
@@ -22,6 +57,8 @@
 			Schema.validateType(() => {}, 'boolean') ? console.warn('Fail') : true;
 			Schema.validateType([], 'boolean') ? console.warn('Fail') : true;
 			Schema.validateType({}, 'boolean') ? console.warn('Fail') : true;
+			Schema.validateType(null, 'boolean') ? console.warn('Fail') : true;
+			Schema.validateType(undefined, 'boolean') ? console.warn('Fail') : true;
 			// Number
 			Schema.validateType(true, 'number') ? console.warn('Fail') : true;
 			Schema.validateType(1, 'number') ? true : console.warn('Fail');
@@ -29,6 +66,8 @@
 			Schema.validateType(() => {}, 'number') ? console.warn('Fail') : true;
 			Schema.validateType([], 'number') ? console.warn('Fail') : true;
 			Schema.validateType({}, 'number') ? console.warn('Fail') : true;
+			Schema.validateType(null, 'number') ? console.warn('Fail') : true;
+			Schema.validateType(undefined, 'number') ? console.warn('Fail') : true;
 			// String
 			Schema.validateType(true, 'string') ? console.warn('Fail') : true;
 			Schema.validateType(1, 'string') ? console.warn('Fail') : true;
@@ -36,6 +75,8 @@
 			Schema.validateType(() => {}, 'string') ? console.warn('Fail') : true;
 			Schema.validateType([], 'string') ? console.warn('Fail') : true;
 			Schema.validateType({}, 'string') ? console.warn('Fail') : true;
+			Schema.validateType(null, 'string') ? console.warn('Fail') : true;
+			Schema.validateType(undefined, 'string') ? console.warn('Fail') : true;
 			// Function
 			Schema.validateType(true, 'function') ? console.warn('Fail') : true;
 			Schema.validateType(1, 'function') ? console.warn('Fail') : true;
@@ -43,6 +84,8 @@
 			Schema.validateType(() => {}, 'function') ? true : console.warn('Fail');
 			Schema.validateType([], 'function') ? console.warn('Fail') : true;
 			Schema.validateType({}, 'function') ? console.warn('Fail') : true;
+			Schema.validateType(null, 'function') ? console.warn('Fail') : true;
+			Schema.validateType(undefined, 'function') ? console.warn('Fail') : true;
 			// Array
 			Schema.validateType(true, 'array') ? console.warn('Fail') : true;
 			Schema.validateType(1, 'array') ? console.warn('Fail') : true;
@@ -50,6 +93,8 @@
 			Schema.validateType(() => {}, 'array') ? console.warn('Fail') : true;
 			Schema.validateType([], 'array') ? true : console.warn('Fail');
 			Schema.validateType({}, 'array') ? console.warn('Fail') : true;
+			Schema.validateType(null, 'array') ? console.warn('Fail') : true;
+			Schema.validateType(undefined, 'array') ? console.warn('Fail') : true;
 			// Object
 			Schema.validateType(true, 'object') ? console.warn('Fail') : true;
 			Schema.validateType(1, 'object') ? console.warn('Fail') : true;
@@ -57,8 +102,19 @@
 			Schema.validateType(() => {}, 'object') ? console.warn('Fail') : true;
 			Schema.validateType([], 'object') ? console.warn('Fail') : true;
 			Schema.validateType({}, 'object') ? true : console.warn('Fail');
+			Schema.validateType(null, 'object') ? console.warn('Fail') : true;
+			Schema.validateType(undefined, 'object') ? console.warn('Fail') : true;
 
-			console.log('All tests have finished.');
+			/*
+				validateCustom
+			*/
+
+			Schema.validateCustom(null, () => {return true;}) ? true : console.warn('Fail');
+			Schema.validateCustom(null, () => {return false;}) ? console.warn('Fail') : true;
+			Schema.validateCustom(2, (value) => {return value === 2 ? true : false;}) ? true : console.warn('Fail');
+			Schema.validateCustom(3, (value) => {return value === 2 ? true : false;}) ? console.warn('Fail') : true;
+
+			console.log('All tests have finished. Failures will be displayed above. No warnings means all tests passed.');
 		</script>
 	</body>
 </html>

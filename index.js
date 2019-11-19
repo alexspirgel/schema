@@ -11,7 +11,7 @@ const Schema = class {
 	 */
 
 	static get model() {
-		// Define a single model.
+		// Define a single Schema model.
 		const model = {
 			type: 'object'
 		};
@@ -27,30 +27,41 @@ const Schema = class {
 	}
 
 	/**
-	 * Validate an input against a model.
+	 * Validate an input against one or more models.
 	 * @param {*} input - The input to compare to the model.
-	 * @param {*} model - The model to compare the input to.
+	 * @param {object} model - The model to compare the input to. Can be an array.
+	 * @param {object} [path] - The model to compare the input to. If passed, must be an array.
 	 * @returns {boolean} - The validation result.
 	 */
 
 	static validate(input, model, path = []) {
-		// if the model is an array of models.
+		// If the model is an array of models.
 		if (Array.isArray(model)) {
 			// For each model.
 			for (const property in model) {
 				// If the input validates true with this model.
 				if (this.validate(input, model[property], path) === true) {
+					// If any of the models validate true, return true for the whole validate execution.
 					return true;
 				}
 			}
-			// If the input doesn't validate true with any of the models.
+			// If the input doesn't validate true against any of the models.
 			return false;
 		}
 		// If the model is a singular model.
 		else {
+			// Return the result from the validation;
 			return this._validate(input, model, path);
 		}
 	}
+
+	/**
+	 * Validate an input against a single model.
+	 * @param {*} input - The input to compare to the model.
+	 * @param {object} model - The model to compare the input to.
+	 * @param {object} [path] - The model to compare the input to. If passed, must be an array.
+	 * @returns {boolean} - The validation result.
+	 */
 
 	static _validate(input, model, path = []) {
 		// If required is not true.
@@ -62,6 +73,7 @@ const Schema = class {
 			}
 		}
 		// For each property in the model.
+		// Return false if any return false.
 		for (const property in model) {
 			if (property === 'required') {
 				if (!this.validateRequired(input, model[property])) {
@@ -84,7 +96,7 @@ const Schema = class {
 				}
 			}
 		}
-		//
+		// If no other model properties validate false, return true.
 		return true;
 	}
 
@@ -126,11 +138,12 @@ const Schema = class {
 			}
 		}
 		else if (type === 'object') {
-			// If input is an object, and not null.
+			// If input is an object, and not null (null has the type object for legacy language reasons).
 			if (typeof input === 'object' && input !== null) {
 				return true;
 			}
 		}
+		// If the input is not the correct type, or the passed model type is not one we check for.
 		return false;
 	}
 
@@ -154,10 +167,8 @@ const Schema = class {
 	}
 
 	static validateCustom(input, custom) {
-		if (custom(input)) {
-			return true;
-		}
-		return false;
+		// Return the value from the custom compare function.
+		return custom(input);
 	}
 
 

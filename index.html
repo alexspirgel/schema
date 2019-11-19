@@ -86,21 +86,12 @@
 			Schema.validateType({}, 'function') ? console.warn('Fail') : true;
 			Schema.validateType(null, 'function') ? console.warn('Fail') : true;
 			Schema.validateType(undefined, 'function') ? console.warn('Fail') : true;
-			// Array
-			Schema.validateType(true, 'array') ? console.warn('Fail') : true;
-			Schema.validateType(1, 'array') ? console.warn('Fail') : true;
-			Schema.validateType('a', 'array') ? console.warn('Fail') : true;
-			Schema.validateType(() => {}, 'array') ? console.warn('Fail') : true;
-			Schema.validateType([], 'array') ? true : console.warn('Fail');
-			Schema.validateType({}, 'array') ? console.warn('Fail') : true;
-			Schema.validateType(null, 'array') ? console.warn('Fail') : true;
-			Schema.validateType(undefined, 'array') ? console.warn('Fail') : true;
 			// Object
 			Schema.validateType(true, 'object') ? console.warn('Fail') : true;
 			Schema.validateType(1, 'object') ? console.warn('Fail') : true;
 			Schema.validateType('a', 'object') ? console.warn('Fail') : true;
 			Schema.validateType(() => {}, 'object') ? console.warn('Fail') : true;
-			Schema.validateType([], 'object') ? console.warn('Fail') : true;
+			Schema.validateType([], 'object') ? true : console.warn('Fail');
 			Schema.validateType({}, 'object') ? true : console.warn('Fail');
 			Schema.validateType(null, 'object') ? console.warn('Fail') : true;
 			Schema.validateType(undefined, 'object') ? console.warn('Fail') : true;
@@ -113,6 +104,30 @@
 			Schema.validateCustom(null, () => {return false;}) ? console.warn('Fail') : true;
 			Schema.validateCustom(2, (value) => {return value === 2 ? true : false;}) ? true : console.warn('Fail');
 			Schema.validateCustom(3, (value) => {return value === 2 ? true : false;}) ? console.warn('Fail') : true;
+
+			/*
+			*/
+			var input1 = [1, '2', [true, false], 2];
+			var model1 = [
+				{
+					type: 'object',
+					allPropertiesSchema: [
+						{
+							type: 'number'
+						},
+						{
+							type: 'string'
+						},
+						{
+							type: 'object',
+							allPropertiesSchema: {
+								type: 'boolean'
+							}
+						}
+					]
+				}
+			];
+			console.log(Schema.validate(input1, model1));
 
 			console.log('All tests have finished. Failures will be displayed above. No warnings means all tests passed.');
 		</script>

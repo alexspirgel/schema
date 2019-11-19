@@ -19,7 +19,8 @@ const Schema = class {
 		return [
 			model,
 			{
-				type: 'array',
+				type: 'object',
+				instance: Array,
 				itemSchema: model
 			}
 		];
@@ -32,26 +33,31 @@ const Schema = class {
 	 * @returns {boolean} - The validation result.
 	 */
 
-	static validate(input, model) {
+	static validate(input, model, path = []) {
 		// if the model is an array of models.
 		if (Array.isArray(model)) {
 			// For each model.
 			for (const property in model) {
-				// Validate the input against the model.
-				this.validate(input, model[property]);
+				// If the input validates true with this model.
+				if (this.validate(input, model[property], path) === true) {
+					return true;
+				}
 			}
+			// If the input doesn't validate true with any of the models.
+			return false;
 		}
 		// If the model is a singular model.
 		else {
-			this._validate(input, model);
+			return this._validate(input, model, path);
 		}
 	}
 
-	static _validate(input, model) {
+	static _validate(input, model, path = []) {
 		// If required is not true.
 		if (model.required !== true) {
 			// if the input is undefined or null.
 			if (typeof input === 'undefined' || input === null) {
+				// Return true, skipping all other validation.
 				return true;
 			}
 		}
@@ -67,7 +73,19 @@ const Schema = class {
 					return false;
 				}
 			}
+			else if (property === 'allPropertiesSchema') {
+				if (!this.validateAllPropertiesSchema(input, model[property], path)) {
+					return false;
+				}
+			}
+			else if (property === 'custom') {
+				if (!this.validateCustom(input, model[property])) {
+					return false;
+				}
+			}
 		}
+		//
+		return true;
 	}
 
 	static validateRequired(input, required) {
@@ -107,18 +125,32 @@ const Schema = class {
 				return true;
 			}
 		}
-		else if (type === 'array') {
-			if (Array.isArray(input)) {
-				return true;
-			}
-		}
 		else if (type === 'object') {
-			// If input is an object, not an array, and not null.
-			if (typeof input === 'object' && !Array.isArray(input) && input !== null) {
+			// If input is an object, and not null.
+			if (typeof input === 'object' && input !== null) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	static validateAllPropertiesSchema(input, allPropertiesSchema, path = []) {
+		// For each value in the input.
+		for (const property in input) {
+			//
+			path.push(property);
+			console.log(path);
+			//
+			const validationResult = this.validate(input[property], allPropertiesSchema, path);
+			//
+			path.pop();
+			// If the input value validates false.
+			if (!validationResult) {
+				return false;
+			}
+		}
+		// If none of the input values validate false.
+		return true;
 	}
 
 	static validateCustom(input, custom) {

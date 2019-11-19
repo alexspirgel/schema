@@ -104,6 +104,24 @@
 			Schema.validateCustom(() => {return false;}, null) ? console.warn('Fail') : true;
 			Schema.validateCustom((value) => {return value === 2 ? true : false;}, 2) ? true : console.warn('Fail');
 			Schema.validateCustom((value) => {return value === 2 ? true : false;}, 3) ? console.warn('Fail') : true;
+			var customModel1 = {
+				type: 'object',
+				propertySchema: {
+					width: {
+						type: 'number',
+						custom: (input, path, inputEntry) => {
+							path.pop();
+							path.push('height');
+							const height = Schema.resolvePath(path, inputEntry);
+							if ((input === undefined || input === null) &&
+							(height === undefined || height === null)) {
+								return 'A width or height must be set.';
+							}
+							return true;
+						}
+					}
+				}
+			}
 
 			/*
 			*/
@@ -119,14 +137,22 @@
 						},
 						{
 							type: 'object',
-							allPropertiesSchema: {
-								type: 'boolean'
-							}
+							allPropertiesSchema: [
+								{
+									type: 'boolean'
+								},
+								{
+									type: 'object',
+									allPropertiesSchema: {
+										type: 'string'
+									}
+								}
+							]
 						}
 					]
 				}
 			];
-			var input1 = [1, '2', [true, false], 2];
+			var input1 = [1, '2', {test1: true, test2: ['a', 'b', 'c']}, 2];
 			console.log(Schema.validate(model1, input1));
 
 			console.log('All tests have finished. Failures will be displayed above. No warnings means all tests passed.');

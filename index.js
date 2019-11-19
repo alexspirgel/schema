@@ -31,10 +31,16 @@ const Schema = class {
 	 * @param {object} model - The model to compare the input to. Can be an array.
 	 * @param {*} input - The input to compare to the model.
 	 * @param {object} [path] - The model to compare the input to. If passed, must be an array.
+	 * @param {boolean} [recursive] - A flag indicating if the function call is a recursive call or not (for internal use only).
 	 * @returns {boolean} - The validation result.
 	 */
 
-	static validate(model, input, path = []) {
+	static validate(model, input, path = [], recursive = false) {
+		// If the call is not recursive.
+		if (!recursive) {
+			// Set the input as it was originally entered.
+			const inputEntry = input;
+		}
 		// If the model is an array of models.
 		if (Array.isArray(model)) {
 			// For each model.
@@ -91,7 +97,7 @@ const Schema = class {
 				}
 			}
 			else if (property === 'custom') {
-				if (!this.validateCustom(model[property], input)) {
+				if (!this.validateCustom(model[property], input, path, inputEntry)) {
 					return false;
 				}
 			}
@@ -150,12 +156,11 @@ const Schema = class {
 	static validateAllPropertiesSchema(allPropertiesSchema, input, path = []) {
 		// For each value in the input.
 		for (const property in input) {
-			//
+			// Append property to path array.
 			path.push(property);
-			console.log(path);
-			//
-			const validationResult = this.validate(allPropertiesSchema, input[property], path);
-			//
+			// Validate property value against `allPropertiesSchema`.
+			const validationResult = this.validate(allPropertiesSchema, input[property], path, true);
+			// Remove property from path array.
 			path.pop();
 			// If the input value validates false.
 			if (!validationResult) {
@@ -166,13 +171,24 @@ const Schema = class {
 		return true;
 	}
 
-	static validateCustom(custom, input, path = []) {
-		// Return the value from the custom compare function.
-		return custom(input);
+	static validateCustom(custom, input, path = [], inputEntry) {
+		const validationResult = custom(input, path, inputEntry);
+		if (validationResult === true) {
+			return true;
+		}
+		else {
+			if (validationResult !== false) {
+				let customError = validationResult; // We are not doing anything with this yet.
+			}
+			return false;
+		}
 	}
 
+	/*
+	 *
+	 */
 
-
+	static resolvePath() {}
 
 
 

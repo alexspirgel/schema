@@ -20,30 +20,30 @@
 
 			// True
 			Schema.validateRequired(true, true) ? true : console.warn('Fail');
-			Schema.validateRequired(1, true) ? true : console.warn('Fail');
-			Schema.validateRequired('a', true) ? true : console.warn('Fail');
-			Schema.validateRequired(() => {}, true) ? true : console.warn('Fail');
-			Schema.validateRequired([], true) ? true : console.warn('Fail');
-			Schema.validateRequired({}, true) ? true : console.warn('Fail');
-			Schema.validateRequired(null, true) ? console.warn('Fail') : true;
-			Schema.validateRequired(undefined, true) ? console.warn('Fail') : true;
+			Schema.validateRequired(true, 1) ? true : console.warn('Fail');
+			Schema.validateRequired(true, 'a') ? true : console.warn('Fail');
+			Schema.validateRequired(true, () => {}) ? true : console.warn('Fail');
+			Schema.validateRequired(true, []) ? true : console.warn('Fail');
+			Schema.validateRequired(true, {}) ? true : console.warn('Fail');
+			Schema.validateRequired(true, null) ? console.warn('Fail') : true;
+			Schema.validateRequired(true, undefined) ? console.warn('Fail') : true;
 			// False
-			Schema.validateRequired(true, false) ? true : console.warn('Fail');
-			Schema.validateRequired(1, false) ? true : console.warn('Fail');
-			Schema.validateRequired('a', false) ? true : console.warn('Fail');
-			Schema.validateRequired(() => {}, false) ? true : console.warn('Fail');
-			Schema.validateRequired([], false) ? true : console.warn('Fail');
-			Schema.validateRequired({}, false) ? true : console.warn('Fail');
-			Schema.validateRequired(null, false) ? true : console.warn('Fail');
-			Schema.validateRequired(undefined, false) ? true : console.warn('Fail');
+			Schema.validateRequired(false, true) ? true : console.warn('Fail');
+			Schema.validateRequired(false, 1) ? true : console.warn('Fail');
+			Schema.validateRequired(false, 'a') ? true : console.warn('Fail');
+			Schema.validateRequired(false, () => {}) ? true : console.warn('Fail');
+			Schema.validateRequired(false, []) ? true : console.warn('Fail');
+			Schema.validateRequired(false, {}) ? true : console.warn('Fail');
+			Schema.validateRequired(false, null) ? true : console.warn('Fail');
+			Schema.validateRequired(false, undefined) ? true : console.warn('Fail');
 			// Undefined
-			Schema.validateRequired(true, undefined) ? true : console.warn('Fail');
-			Schema.validateRequired(1, undefined) ? true : console.warn('Fail');
-			Schema.validateRequired('a', undefined) ? true : console.warn('Fail');
-			Schema.validateRequired(() => {}, undefined) ? true : console.warn('Fail');
-			Schema.validateRequired([], undefined) ? true : console.warn('Fail');
-			Schema.validateRequired({}, undefined) ? true : console.warn('Fail');
-			Schema.validateRequired(null, undefined) ? true : console.warn('Fail');
+			Schema.validateRequired(undefined, true) ? true : console.warn('Fail');
+			Schema.validateRequired(undefined, 1) ? true : console.warn('Fail');
+			Schema.validateRequired(undefined, 'a') ? true : console.warn('Fail');
+			Schema.validateRequired(undefined, () => {}) ? true : console.warn('Fail');
+			Schema.validateRequired(undefined, []) ? true : console.warn('Fail');
+			Schema.validateRequired(undefined, {}) ? true : console.warn('Fail');
+			Schema.validateRequired(undefined, null) ? true : console.warn('Fail');
 			Schema.validateRequired(undefined, undefined) ? true : console.warn('Fail');
 
 			/*
@@ -51,63 +51,62 @@
 			*/
 
 			// Boolean
-			Schema.validateType(true, 'boolean') ? true : console.warn('Fail');
-			Schema.validateType(1, 'boolean') ? console.warn('Fail') : true;
-			Schema.validateType('a', 'boolean') ? console.warn('Fail') : true;
-			Schema.validateType(() => {}, 'boolean') ? console.warn('Fail') : true;
-			Schema.validateType([], 'boolean') ? console.warn('Fail') : true;
-			Schema.validateType({}, 'boolean') ? console.warn('Fail') : true;
-			Schema.validateType(null, 'boolean') ? console.warn('Fail') : true;
-			Schema.validateType(undefined, 'boolean') ? console.warn('Fail') : true;
+			Schema.validateType('boolean', true) ? true : console.warn('Fail');
+			Schema.validateType('boolean', 1) ? console.warn('Fail') : true;
+			Schema.validateType('boolean', 'a') ? console.warn('Fail') : true;
+			Schema.validateType('boolean', () => {}) ? console.warn('Fail') : true;
+			Schema.validateType('boolean', []) ? console.warn('Fail') : true;
+			Schema.validateType('boolean', {}) ? console.warn('Fail') : true;
+			Schema.validateType('boolean', null) ? console.warn('Fail') : true;
+			Schema.validateType('boolean', undefined) ? console.warn('Fail') : true;
 			// Number
-			Schema.validateType(true, 'number') ? console.warn('Fail') : true;
-			Schema.validateType(1, 'number') ? true : console.warn('Fail');
-			Schema.validateType('a', 'number') ? console.warn('Fail') : true;
-			Schema.validateType(() => {}, 'number') ? console.warn('Fail') : true;
-			Schema.validateType([], 'number') ? console.warn('Fail') : true;
-			Schema.validateType({}, 'number') ? console.warn('Fail') : true;
-			Schema.validateType(null, 'number') ? console.warn('Fail') : true;
-			Schema.validateType(undefined, 'number') ? console.warn('Fail') : true;
+			Schema.validateType('number', true) ? console.warn('Fail') : true;
+			Schema.validateType('number', 1) ? true : console.warn('Fail');
+			Schema.validateType('number', 'a') ? console.warn('Fail') : true;
+			Schema.validateType('number', () => {}) ? console.warn('Fail') : true;
+			Schema.validateType('number', []) ? console.warn('Fail') : true;
+			Schema.validateType('number', {}) ? console.warn('Fail') : true;
+			Schema.validateType('number', null) ? console.warn('Fail') : true;
+			Schema.validateType('number', undefined) ? console.warn('Fail') : true;
 			// String
-			Schema.validateType(true, 'string') ? console.warn('Fail') : true;
-			Schema.validateType(1, 'string') ? console.warn('Fail') : true;
-			Schema.validateType('a', 'string') ? true : console.warn('Fail');
-			Schema.validateType(() => {}, 'string') ? console.warn('Fail') : true;
-			Schema.validateType([], 'string') ? console.warn('Fail') : true;
-			Schema.validateType({}, 'string') ? console.warn('Fail') : true;
-			Schema.validateType(null, 'string') ? console.warn('Fail') : true;
-			Schema.validateType(undefined, 'string') ? console.warn('Fail') : true;
+			Schema.validateType('string', true) ? console.warn('Fail') : true;
+			Schema.validateType('string', 1) ? console.warn('Fail') : true;
+			Schema.validateType('string', 'a') ? true : console.warn('Fail');
+			Schema.validateType('string', () => {}) ? console.warn('Fail') : true;
+			Schema.validateType('string', []) ? console.warn('Fail') : true;
+			Schema.validateType('string', {}) ? console.warn('Fail') : true;
+			Schema.validateType('string', null) ? console.warn('Fail') : true;
+			Schema.validateType('string', undefined) ? console.warn('Fail') : true;
 			// Function
-			Schema.validateType(true, 'function') ? console.warn('Fail') : true;
-			Schema.validateType(1, 'function') ? console.warn('Fail') : true;
-			Schema.validateType('a', 'function') ? console.warn('Fail') : true;
-			Schema.validateType(() => {}, 'function') ? true : console.warn('Fail');
-			Schema.validateType([], 'function') ? console.warn('Fail') : true;
-			Schema.validateType({}, 'function') ? console.warn('Fail') : true;
-			Schema.validateType(null, 'function') ? console.warn('Fail') : true;
-			Schema.validateType(undefined, 'function') ? console.warn('Fail') : true;
+			Schema.validateType('function', true) ? console.warn('Fail') : true;
+			Schema.validateType('function', 1) ? console.warn('Fail') : true;
+			Schema.validateType('function', 'a') ? console.warn('Fail') : true;
+			Schema.validateType('function', () => {}) ? true : console.warn('Fail');
+			Schema.validateType('function', []) ? console.warn('Fail') : true;
+			Schema.validateType('function', {}) ? console.warn('Fail') : true;
+			Schema.validateType('function', null) ? console.warn('Fail') : true;
+			Schema.validateType('function', undefined) ? console.warn('Fail') : true;
 			// Object
-			Schema.validateType(true, 'object') ? console.warn('Fail') : true;
-			Schema.validateType(1, 'object') ? console.warn('Fail') : true;
-			Schema.validateType('a', 'object') ? console.warn('Fail') : true;
-			Schema.validateType(() => {}, 'object') ? console.warn('Fail') : true;
-			Schema.validateType([], 'object') ? true : console.warn('Fail');
-			Schema.validateType({}, 'object') ? true : console.warn('Fail');
-			Schema.validateType(null, 'object') ? console.warn('Fail') : true;
-			Schema.validateType(undefined, 'object') ? console.warn('Fail') : true;
+			Schema.validateType('object', true) ? console.warn('Fail') : true;
+			Schema.validateType('object', 1) ? console.warn('Fail') : true;
+			Schema.validateType('object', 'a') ? console.warn('Fail') : true;
+			Schema.validateType('object', () => {}) ? console.warn('Fail') : true;
+			Schema.validateType('object', []) ? true : console.warn('Fail');
+			Schema.validateType('object', {}) ? true : console.warn('Fail');
+			Schema.validateType('object', null) ? console.warn('Fail') : true;
+			Schema.validateType('object', undefined) ? console.warn('Fail') : true;
 
 			/*
 				validateCustom
 			*/
 
-			Schema.validateCustom(null, () => {return true;}) ? true : console.warn('Fail');
-			Schema.validateCustom(null, () => {return false;}) ? console.warn('Fail') : true;
-			Schema.validateCustom(2, (value) => {return value === 2 ? true : false;}) ? true : console.warn('Fail');
-			Schema.validateCustom(3, (value) => {return value === 2 ? true : false;}) ? console.warn('Fail') : true;
+			Schema.validateCustom(() => {return true;}, null) ? true : console.warn('Fail');
+			Schema.validateCustom(() => {return false;}, null) ? console.warn('Fail') : true;
+			Schema.validateCustom((value) => {return value === 2 ? true : false;}, 2) ? true : console.warn('Fail');
+			Schema.validateCustom((value) => {return value === 2 ? true : false;}, 3) ? console.warn('Fail') : true;
 
 			/*
 			*/
-			var input1 = [1, '2', [true, false], 2];
 			var model1 = [
 				{
 					type: 'object',
@@ -127,7 +126,8 @@
 					]
 				}
 			];
-			console.log(Schema.validate(input1, model1));
+			var input1 = [1, '2', [true, false], 2];
+			console.log(Schema.validate(model1, input1));
 
 			console.log('All tests have finished. Failures will be displayed above. No warnings means all tests passed.');
 		</script>

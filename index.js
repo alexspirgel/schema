@@ -28,19 +28,19 @@ const Schema = class {
 
 	/**
 	 * Validate an input against one or more models.
-	 * @param {*} input - The input to compare to the model.
 	 * @param {object} model - The model to compare the input to. Can be an array.
+	 * @param {*} input - The input to compare to the model.
 	 * @param {object} [path] - The model to compare the input to. If passed, must be an array.
 	 * @returns {boolean} - The validation result.
 	 */
 
-	static validate(input, model, path = []) {
+	static validate(model, input, path = []) {
 		// If the model is an array of models.
 		if (Array.isArray(model)) {
 			// For each model.
 			for (const property in model) {
 				// If the input validates true with this model.
-				if (this.validate(input, model[property], path) === true) {
+				if (this.validate(model[property], input, path) === true) {
 					// If any of the models validate true, return true for the whole validate execution.
 					return true;
 				}
@@ -51,19 +51,19 @@ const Schema = class {
 		// If the model is a singular model.
 		else {
 			// Return the result from the validation;
-			return this._validate(input, model, path);
+			return this._validate(model, input, path);
 		}
 	}
 
 	/**
 	 * Validate an input against a single model.
-	 * @param {*} input - The input to compare to the model.
 	 * @param {object} model - The model to compare the input to.
+	 * @param {*} input - The input to compare to the model.
 	 * @param {object} [path] - The model to compare the input to. If passed, must be an array.
 	 * @returns {boolean} - The validation result.
 	 */
 
-	static _validate(input, model, path = []) {
+	static _validate(model, input, path = []) {
 		// If required is not true.
 		if (model.required !== true) {
 			// if the input is undefined or null.
@@ -76,22 +76,22 @@ const Schema = class {
 		// Return false if any return false.
 		for (const property in model) {
 			if (property === 'required') {
-				if (!this.validateRequired(input, model[property])) {
+				if (!this.validateRequired(model[property], input)) {
 					return false;
 				}
 			}
 			else if (property === 'type') {
-				if (!this.validateType(input, model[property])) {
+				if (!this.validateType(model[property], input)) {
 					return false;
 				}
 			}
 			else if (property === 'allPropertiesSchema') {
-				if (!this.validateAllPropertiesSchema(input, model[property], path)) {
+				if (!this.validateAllPropertiesSchema(model[property], input, path)) {
 					return false;
 				}
 			}
 			else if (property === 'custom') {
-				if (!this.validateCustom(input, model[property])) {
+				if (!this.validateCustom(model[property], input)) {
 					return false;
 				}
 			}
@@ -100,7 +100,7 @@ const Schema = class {
 		return true;
 	}
 
-	static validateRequired(input, required) {
+	static validateRequired(required, input) {
 		// If required is true.
 		if (required === true) {
 			// If input is not undefined and is not null.
@@ -116,7 +116,7 @@ const Schema = class {
 		return true;
 	}
 
-	static validateType(input, type) {
+	static validateType(type, input) {
 		if (type === 'boolean') {
 			if (typeof input === 'boolean') {
 				return true;
@@ -147,14 +147,14 @@ const Schema = class {
 		return false;
 	}
 
-	static validateAllPropertiesSchema(input, allPropertiesSchema, path = []) {
+	static validateAllPropertiesSchema(allPropertiesSchema, input, path = []) {
 		// For each value in the input.
 		for (const property in input) {
 			//
 			path.push(property);
 			console.log(path);
 			//
-			const validationResult = this.validate(input[property], allPropertiesSchema, path);
+			const validationResult = this.validate(allPropertiesSchema, input[property], path);
 			//
 			path.pop();
 			// If the input value validates false.
@@ -166,7 +166,7 @@ const Schema = class {
 		return true;
 	}
 
-	static validateCustom(input, custom) {
+	static validateCustom(custom, input, path = []) {
 		// Return the value from the custom compare function.
 		return custom(input);
 	}
@@ -186,7 +186,7 @@ const Schema = class {
 
 	set model(model) {
 		// Validate the model against the Schema class model.
-		let validationResult = this.constructor.validate(model, this.constructor.model);
+		let validationResult = this.constructor.validate(this.constructor.model, model);
 		// If the model is valid.
 		if (validationResult) {
 			this.model = model;
@@ -215,7 +215,7 @@ const Schema = class {
 
 	validate(input) {
 		// Validate the input against the model.
-		let validationResult = this.constructor.validate(input, this.model);
+		let validationResult = this.constructor.validate(this.model, input);
 	}
 
 };

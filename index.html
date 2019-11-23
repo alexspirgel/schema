@@ -15,38 +15,6 @@
 			console.log('Starting tests...');
 
 			/*
-				validateRequired
-			*/
-
-			// True
-			Schema.validateRequired(true, true) ? true : console.warn('Fail');
-			Schema.validateRequired(true, 1) ? true : console.warn('Fail');
-			Schema.validateRequired(true, 'a') ? true : console.warn('Fail');
-			Schema.validateRequired(true, () => {}) ? true : console.warn('Fail');
-			Schema.validateRequired(true, []) ? true : console.warn('Fail');
-			Schema.validateRequired(true, {}) ? true : console.warn('Fail');
-			Schema.validateRequired(true, null) ? console.warn('Fail') : true;
-			Schema.validateRequired(true, undefined) ? console.warn('Fail') : true;
-			// False
-			Schema.validateRequired(false, true) ? true : console.warn('Fail');
-			Schema.validateRequired(false, 1) ? true : console.warn('Fail');
-			Schema.validateRequired(false, 'a') ? true : console.warn('Fail');
-			Schema.validateRequired(false, () => {}) ? true : console.warn('Fail');
-			Schema.validateRequired(false, []) ? true : console.warn('Fail');
-			Schema.validateRequired(false, {}) ? true : console.warn('Fail');
-			Schema.validateRequired(false, null) ? true : console.warn('Fail');
-			Schema.validateRequired(false, undefined) ? true : console.warn('Fail');
-			// Undefined
-			Schema.validateRequired(undefined, true) ? true : console.warn('Fail');
-			Schema.validateRequired(undefined, 1) ? true : console.warn('Fail');
-			Schema.validateRequired(undefined, 'a') ? true : console.warn('Fail');
-			Schema.validateRequired(undefined, () => {}) ? true : console.warn('Fail');
-			Schema.validateRequired(undefined, []) ? true : console.warn('Fail');
-			Schema.validateRequired(undefined, {}) ? true : console.warn('Fail');
-			Schema.validateRequired(undefined, null) ? true : console.warn('Fail');
-			Schema.validateRequired(undefined, undefined) ? true : console.warn('Fail');
-
-			/*
 				validateType
 			*/
 
@@ -96,6 +64,16 @@
 			Schema.validateType('object', null) ? console.warn('Fail') : true;
 			Schema.validateType('object', undefined) ? console.warn('Fail') : true;
 
+			// Unset
+			Schema.validateType('unset', true) ? console.warn('Fail') : true;
+			Schema.validateType('unset', 1) ? console.warn('Fail') : true;
+			Schema.validateType('unset', 'a') ? console.warn('Fail') : true;
+			Schema.validateType('unset', () => {}) ? console.warn('Fail') : true;
+			Schema.validateType('unset', []) ? console.warn('Fail') : true;
+			Schema.validateType('unset', {}) ? console.warn('Fail') : true;
+			Schema.validateType('unset', null) ? true : console.warn('Fail');
+			Schema.validateType('unset', undefined) ? true : console.warn('Fail');
+
 			/*
 				validateCustom
 			*/
@@ -107,53 +85,56 @@
 			var customModel1 = {
 				type: 'object',
 				propertySchema: {
-					width: {
-						type: 'number',
-						custom: (input, path, inputEntry) => {
-							path.pop();
-							path.push('height');
-							const height = Schema.resolvePath(path, inputEntry);
-							if ((input === undefined || input === null) &&
-							(height === undefined || height === null)) {
-								return 'A width or height must be set.';
-							}
-							return true;
-						}
-					}
-				}
-			}
-
-			/*
-			*/
-			var model1 = [
-				{
-					type: 'object',
-					allPropertiesSchema: [
+					width: [
 						{
 							type: 'number'
 						},
 						{
-							type: 'string'
+							type: 'unset',
+							custom: (input, path, inputEntry) => {
+								path.pop();
+								path.push('height');
+								const height = Schema.resolvePath(path, inputEntry);
+								if (Schema.validateType('unset', height)) {
+									return 'A width or height must be set. (width)';
+								}
+								return true;
+							}
+						}
+					],
+					height: [
+						{
+							type: 'number'
 						},
 						{
-							type: 'object',
-							allPropertiesSchema: [
-								{
-									type: 'boolean'
-								},
-								{
-									type: 'object',
-									allPropertiesSchema: {
-										type: 'string'
-									}
+							type: 'unset',
+							custom: (input, path, inputEntry) => {
+								path.pop();
+								path.push('width');
+								const width = Schema.resolvePath(path, inputEntry);
+								if (Schema.validateType('unset', width)) {
+									return 'A width or height must be set. (height)';
 								}
-							]
+								return true;
+							}
 						}
 					]
 				}
-			];
-			var input1 = [1, '2', {test1: true, test2: ['a', 'b', 'c']}, 2];
-			console.log(Schema.validate(model1, input1));
+			}
+			var custonInput1 = {
+				// width: 8,
+				// height: 12
+			}
+			console.log(Schema.validate({
+				model: customModel1,
+				input: custonInput1
+			}));
+
+			/*
+			*/
+
+			// const test = new Schema(customModel1);
+			// test.validate('stuff');
 
 			console.log('All tests have finished. Failures will be displayed above. No warnings means all tests passed.');
 		</script>

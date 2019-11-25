@@ -75,13 +75,54 @@
 			Schema.validateType('unset', undefined) ? true : console.warn('Fail');
 
 			/*
+				validateExact
+			*/
+
+			Schema.validateExact('123', '123') ? true : console.warn('Fail');
+			Schema.validateExact('123', 123) ? console.warn('Fail') : true;
+			Schema.validateExact(123, '123') ? console.warn('Fail') : true;
+			Schema.validateExact(['123'], '123') ? true : console.warn('Fail');
+			Schema.validateExact(['123', '456'], '123') ? true : console.warn('Fail');
+			Schema.validateExact(['123', '456'], '456') ? true : console.warn('Fail');
+			Schema.validateExact(['123', '456'], 123) ? console.warn('Fail') : true;
+			Schema.validateExact(false, false) ? true : console.warn('Fail');
+
+			/*
+				validateInstanceOf
+			*/
+
+			Schema.validateInstanceOf(Array, []) ? true : console.warn('Fail');
+			Schema.validateInstanceOf(Object, {}) ? true : console.warn('Fail');
+			Schema.validateInstanceOf(Schema, new Schema({})) ? true : console.warn('Fail');
+			
+			/*
 				validateCustom
 			*/
 
-			Schema.validateCustom(() => {return true;}, null) ? true : console.warn('Fail');
-			Schema.validateCustom(() => {return false;}, null) ? console.warn('Fail') : true;
-			Schema.validateCustom((value) => {return value === 2 ? true : false;}, 2) ? true : console.warn('Fail');
-			Schema.validateCustom((value) => {return value === 2 ? true : false;}, 3) ? console.warn('Fail') : true;
+			Schema.validateCustom({
+				validator: () => {
+					return true;
+				},
+				input: null
+			}) ? true : console.warn('Fail');
+			Schema.validateCustom({
+				validator: () => {
+					return false;
+				},
+				input: null
+			}) ? console.warn('Fail') : true;
+			Schema.validateCustom({
+				validator: (value) => {
+					return value === 2 ? true : false;
+				},
+				input: 2
+			}) ? true : console.warn('Fail');
+			Schema.validateCustom({
+				validator: (value) => {
+					return value === 2 ? true : false;
+				},
+				input: 3
+			}) ? console.warn('Fail') : true;
 			var customModel1 = {
 				type: 'object',
 				propertySchema: {
@@ -91,14 +132,18 @@
 						},
 						{
 							type: 'unset',
-							custom: (input, path, inputEntry) => {
-								path.pop();
-								path.push('height');
-								const height = Schema.resolvePath(path, inputEntry);
-								if (Schema.validateType('unset', height)) {
-									return 'A width or height must be set. (width)';
-								}
-								return true;
+							custom: {
+								validator: (input, path, inputEntry) => {
+									const validationResult = Schema.validate({
+										model: {type: 'unset'},
+										input: inputEntry.height
+									});
+									if (validationResult === true) {
+										return false;
+									}
+									return true;
+								},
+								message: 'A width or height must be set.'
 							}
 						}
 					],
@@ -108,31 +153,63 @@
 						},
 						{
 							type: 'unset',
-							custom: (input, path, inputEntry) => {
-								path.pop();
-								path.push('width');
-								const width = Schema.resolvePath(path, inputEntry);
-								if (Schema.validateType('unset', width)) {
-									return 'A width or height must be set. (height)';
-								}
-								return true;
+							custom: {
+								validator: (input, path, inputEntry) => {
+									const validationResult = Schema.validate({
+										model: {type: 'unset'},
+										input: inputEntry.width
+									});
+									if (validationResult === true) {
+										return false
+									}
+									return true;
+								},
+								message: 'A width or height must be set.'
 							}
 						}
 					]
 				}
 			}
-			var custonInput1 = {
-				// width: 8,
-				// height: 12
-			}
-			console.log(Schema.validate({
+			const customValidationResult1 = Schema.validate({
 				model: customModel1,
-				input: custonInput1
-			}));
+				input: {
+					width: 5
+				}
+			});
+			if (customValidationResult1 !== true) {
+				console.warn('Fail');
+			}
+			const customValidationResult2 = Schema.validate({
+				model: customModel1,
+				input: {
+					height: 5
+				}
+			});
+			if (customValidationResult2 !== true) {
+				console.warn('Fail');
+			}
+			const customValidationResult3 = Schema.validate({
+				model: customModel1,
+				input: {
+					width: 5,
+					height: 5
+				}
+			});
+			if (customValidationResult3 !== true) {
+				console.warn('Fail');
+			}
+			const customValidationResult4 = Schema.validate({
+				model: customModel1,
+				input: {}
+			});
+			if (customValidationResult4 !== false) {
+				console.warn('Fail');
+			}
 
 			/*
 			*/
 
+			// console.log(Schema.model);
 			// const test = new Schema(customModel1);
 			// test.validate('stuff');
 

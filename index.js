@@ -104,7 +104,19 @@ const Schema = class {
 	static get modelInstanceOf() {
 		// Define the model for a single `instanceOf` value.
 		const modelInstanceOfSingle = {
-			type: 'function'
+			type: 'function',
+			custom: {
+				validator: (input, path, inputEntry) => {
+					path.pop();
+					const resolvedPath = this.resolvePath(path, inputEntry);
+					const relativeTypeValue = resolvedPath.type;
+					if (relativeTypeValue === 'object') {
+						return true;
+					}
+					return false;
+				},
+				message: '`instanceOf` can only be used in combination with `type: "object"`.'
+			}
 		};
 		// Return the model allowing for a single or multiple value.
 		return [
@@ -148,20 +160,6 @@ const Schema = class {
 				type: 'unset'
 			}
 		]
-	}
-
-	/**
-	 * Generate a custom validator function that checks for a type model value relative to the current property.
-	 */
-	static relativeModelTypeValidator(type) {
-		return typeValidator = (input, path, inputEntry) => {
-			path.pop();
-			const relativeTypeValue = this.resolvePath(path, inputEntry).type;
-			if (relativeTypeValue === type) {
-				return true;
-			}
-			return false;
-		};
 	}
 
 	/**
@@ -459,15 +457,23 @@ const Schema = class {
 	static resolvePath(path, object) {
 		// Initialize a variable to hold the path as we resolve it.
 		let resolvedPath;
-		// For each property in the path array.
-		for (const property in path) {
-			// Get the path segment.
-			let pathSegemnt = path[property];
-			// Traverse to the path segment, building on the previous segments.
-			resolvedPath = object[pathSegemnt];
+		// If the path array is not empty.
+		if (path.length > 0) {
+			// For each property in the path array.
+			for (const property in path) {
+				// Get the path segment.
+				let pathSegemnt = path[property];
+				// Traverse to the path segment, building on the previous segments.
+				resolvedPath = object[pathSegemnt];
+			}
+			// Return the final resolved path.
+			return resolvedPath;
 		}
-		// Return the final resolved path.
-		return resolvedPath;
+		// If the path array is empty.
+		else {
+			// Return the original object.
+			return object;
+		}
 	}
 
 

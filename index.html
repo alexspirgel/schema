@@ -210,7 +210,10 @@
 			*/
 
 			// console.log(Schema.model);
-			// const test = new Schema(customModel1);
+			const test = new Schema({
+				type: 'object',
+				instanceOf: Array
+			});
 			// test.validate('stuff');
 
 			console.log('All tests have finished. Failures will be displayed above. No warnings means all tests passed.');

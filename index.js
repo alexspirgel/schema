@@ -292,27 +292,7 @@ const Schema = class {
 	}
 
 	static validateType(type, input) {
-		if (type === 'boolean') {
-			if (typeof input === 'boolean') {
-				return true;
-			}
-		}
-		else if (type === 'number') {
-			if (typeof input === 'number') {
-				return true;
-			}
-		}
-		else if (type === 'string') {
-			if (typeof input === 'string') {
-				return true;
-			}
-		}
-		else if (type === 'function') {
-			if (typeof input === 'function') {
-				return true;
-			}
-		}
-		else if (type === 'object') {
+		if (type === 'object') {
 			// If input is an object, and not null (null has the type object for legacy language reasons).
 			if (typeof input === 'object' && input !== null) {
 				return true;
@@ -320,6 +300,14 @@ const Schema = class {
 		}
 		else if (type === 'unset') {
 			if (input === undefined || input === null) {
+				return true;
+			}
+		}
+		else if (type === 'boolean' ||
+		type === 'number' ||
+		type === 'string' ||
+		type === 'function') {
+			if (typeof input === type) {
 				return true;
 			}
 		}

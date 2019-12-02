@@ -11,8 +11,8 @@ const Schema = class {
 	 */
 
 	static get model() {
-		// Define a single Schema model.
-		const model = {
+		//
+		const modelSingle = {
 			type: 'object',
 			propertySchema: {
 				type: this.modelType,
@@ -21,15 +21,23 @@ const Schema = class {
 				custom: this.modelCustom
 			}
 		};
-		// Return the full Schema model allowing for a single model or an array of models.
-		return [
-			model,
+		//
+		const model = [
+			modelSingle,
 			{
 				type: 'object',
-				instanceOf: Array,
-				allPropertiesSchema: model
+				instanceOf: Array
+			},
+			{
+				type: 'unset'
 			}
 		];
+		//
+		model[1].allPropertiesSchema = model;
+		//
+		modelSingle.propertySchema.allPropertiesSchema = model;
+		// Return the full Schema model allowing for a single model or an array of models.
+		return model;
 	}
 
 	/**

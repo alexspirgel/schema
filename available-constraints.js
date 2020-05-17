@@ -1,79 +1,72 @@
 /*
-
 Notes:
-
 required = !undefined && !null
-
-Most (all?) properties have their value reversed if an `!` is placed in front of the property name.
-This has the side-effect of requiring these properties to be encased in quotes for proper syntax. I'm actually ok with this because it makes reversed values visually distinct.
-
+even though it is an object, null should NOT satisfy {type: 'object'}
 */
 
 // Not specific to a type
-const all = {
-	required: true,
-	custom: {
+schema = {
+	required: true, // boolean
+	type: 'number', // string must be one of: boolean, number, string, array, object, function
+	custom: { // function should return true or false or throw an error
 		test: (value) => {
-			if (value === 'specific value') {
+			if (value === 123) {
 				return true;
 			}
 			else {
-				return false;
-			}
-		},
-		error: 'Custom error message.'
-	},
-	dependant: {
-		property: $parent.propertyName, // 'parent' || ''
-		type: 'boolean',
-		custom: {
-			test: (value) => {
-				if (value === ture) {
-					return true;
-				}
-				else {
-					return false;
-				}
+				throw new Error('Custom error message.');
 			}
 		}
 	}
 }
 
-//
-const boolean = {
+// boolean
+schema = {
 	type: 'boolean',
+	exactValue: true, // single value or an array of values that match the type
 }
 
-//
-const number = {
+// number
+schema = {
 	type: 'number',
-	greaterThan: -1,
-	greaterThanOrEqualTo: 0,
-	lessThan: 101,
-	lessThanOrEqualTo: 100,
-	'!multipleOf': 2,
+	greaterThan: -1, // number
+	greaterThanOrEqualTo: 0, // number
+	lessThan: 101, // number
+	lessThanOrEqualTo: 100, // number
+	multipleOf: 2, // number or array of numbers
+	exactValue: 123, // single value or an array of values that match the type
 }
 
-//
-const string = {
+// string
+schema = {
 	type: 'string',
-	minimumLength: 5,
-	maximumLength: 25
+	minimumCharacters: 5, // number
+	maximumCharacters: 25, // number
+	exactValue: 'some text', // single value or an array of values that match the type
 }
 
-//
-const array = {
+// array
+schema = {
 	type: 'array',
-	itemSchema: {}
+	minimumLength: 1, // number
+	maximumLength: 5, // number
+	uniqueItems: false, // boolean
+	itemSchema: {} // schema or array of schemas
 }
 
-//
-const object = {
+// object
+schema = {
 	type: 'object',
-	instance: Element,
-	allowUnvalidated: true,
+	instanceOf: Element, // object
+	allowUnvalidatedProperties: true, // boolean
 	propertySchema: {
-		property1: {},
-		property2: {}
+		property1: {}, // schema or array of schemas
+		property2: {} // schema or array of schemas
+		// ...
 	}
+}
+
+// function
+schema = {
+	type: 'function'
 }

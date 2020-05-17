@@ -6,471 +6,256 @@
 const Schema = class {
 
 	/**
-	 * Get the Schema class model. This is the model for the user input models.
-	 * @returns {object} - The Schema class model.
+	 * Get the static model for self-validation.
+	 * @returns {object} - The model.
 	 */
 
 	static get model() {
-		//
-		const modelSingle = {
+		const model = {
+			required: true,
 			type: 'object',
+			allowUnvalidatedProperties: false,
 			propertySchema: {
+				required: this.modelRequired,
 				type: this.modelType,
-				exact: this.modelExact,
-				instanceOf: this.modelInstanceOf,
+				allowUnvalidatedProperties: this.modelAllowUnvalidatedProperties,
+				propertySchema: this.modelPropertySchema,
 				custom: this.modelCustom
 			}
 		};
-		//
-		const model = [
-			modelSingle,
-			{
-				type: 'object',
-				instanceOf: Array
-			},
-			{
-				type: 'unset'
-			}
-		];
-		//
-		model[1].allPropertiesSchema = model;
-		//
-		modelSingle.propertySchema.allPropertiesSchema = model;
-		// Return the full Schema model allowing for a single model or an array of models.
 		return model;
 	}
 
 	/**
-	 * Define the `type` model.
-	 * A `type` model can be one of these values: 'boolean', 'number', 'string', 'function', 'object', or 'unset'
-	 * @returns {object} - The `type` model.
+	 * Get the static required property model for self-validation.
+	 * @returns {object} - The model.
 	 */
 
-	static get modelType() {
-		return [
-			{
-				exact: [
-					'boolean',
-					'number',
-					'string',
-					'function',
-					'object',
-					'unset'
-				]
-			},
-			{
-				type: 'unset'
-			}
-		];
-	}
-
-	/**
-	 * Define the `exact` model.
-	 * An `exact` model can be a single value or array of a boolean, number, or string.
-	 * @returns {object} - The `exact` model.
-	 */
-
-	static get modelExact() {
-		// Define the model for a single exact boolean value.
-		const modelExactBoolean = {
+	static get modelRequired() {
+		return	{
 			type: 'boolean'
 		};
-		// Define the model for a single exact number value.
-		const modelExactNumber = {
-			type: 'number'
-		};
-		// Define the model for a single exact string value.
-		const modelExactString = {
+	}
+	
+	/**
+	 * Get the static type property model for self-validation.
+	 * @returns {object} - The model.
+	 */
+	
+	static get modelType() {
+		return	{
 			type: 'string'
 		};
-		// Return a model that allows for a single value or an array of values.
-		return [
-			modelExactBoolean,
-			modelExactNumber,
-			modelExactString,
-			{
-				type: 'object',
-				instanceOf: Array,
-				allPropertiesSchema: [
-					modelExactBoolean,
-					modelExactNumber,
-					modelExactString,
-				]
-			},
-			{
-				type: 'unset'
-			}
-		]
 	}
-
+	
 	/**
-	 * Define the `instanceOf` model.
-	 * An `instanceOf` model can be a function or an array of functions.
-	 * @returns {object} - The `instanceOf` model.
+	 * Get the static allowUnvalidatedProperties property model for self-validation.
+	 * @returns {object} - The model.
 	 */
 
-	static get modelInstanceOf() {
-		// Define the model for a single `instanceOf` value.
-		const modelInstanceOfSingle = {
-			type: 'function',
-			custom: {
-				validator: (input, path, inputEntry) => {
-					path.pop();
-					const resolvedPath = this.resolvePath(path, inputEntry);
-					const relativeTypeValue = resolvedPath.type;
-					if (relativeTypeValue === 'object') {
-						return true;
-					}
-					return false;
-				},
-				message: '`instanceOf` can only be used in combination with `type: "object"`.'
-			}
+	static get modelAllowUnvalidatedProperties() {
+		return	{
+			type: 'boolean'
 		};
-		// Return the model allowing for a single or multiple value.
-		return [
-			modelInstanceOfSingle,
-			{
-				type: 'object',
-				instanceOf: Array,
-				allPropertiesSchema: modelInstanceOfSingle
-			},
-			{
-				type: 'unset'
-			}
-		];
 	}
 
 	/**
-	 * Define the `custom` model.
-	 * A `custom` model must be an object containing a validator function, a custom message is optional.
-	 * @returns {object} - The `custom` model.
+	 * Get the static propertySchema property model for self-validation.
+	 * @returns {object} - The model.
 	 */
-
-	static get modelCustom() {
-		return [
-			{
-				type: 'object',
-				propertySchema: {
-					validator: {
-						type: 'function'
-					},
-					message: [
-						{
-							type: 'string'
-						},
-						{
-							type: 'unset'
-						}
-					]
-				}
-			},
-			{
-				type: 'unset'
-			}
-		]
+	
+	static get modelPropertySchema() {
+		return	{
+			type: 'object'
+		};
 	}
 
 	/**
-	 * A multi-model supporting wrapper for the single model validation method `_validate`.
-	 * @param {object} parameters - One object to house all parameters for easier workability.
-	 * @param {object|array} parameters.model - The model to compare the input to.
-	 * @param {*} parameters.input - The input to compare to the model.
-	 * @param {array} [parameters.path] - The model to compare the input to. Must be an array.
-	 * @param {*} [parameters.inputEntry] - The original entered input (for internal use only).
-	 * @param {boolean} [parameters.recursive] - A flag indicating if the function call is a recursive call or not (for internal use only).
-	 * @param {boolean} [parameters.debug] - A flag indicating if helpful log messages should be output.
+	 * Get the static custom property model for self-validation.
+	 * @returns {object} - The model.
+	 */
+	
+	static get modelCustom() {
+		return	{
+			type: 'function'
+		};
+	}
+	
+	/**
+	 * A wrapper for `_validate()` that supports multiple model syntax.
+	 * @param {object} parameters - One object to contain all parameters.
+	 * @param {object|array} parameters.model - The model for the input to be compared to.
+	 * @param {*} parameters.input - The input to validate.
 	 * @returns {boolean} The validation result.
 	 */
 
 	static validate(parameters) {
-		if (parameters.debug) {
-			console.log('static validate(parameters)');
-			console.log(parameters);
-		}
-		// If path is undefined.
-		if (parameters.path === undefined) {
-			// Initialize path array.
-			parameters.path = [];
-		}
-		// If the call is not recursive.
-		if (!parameters.recursive) {
-			// Set the input as it was originally entered.
-			parameters.inputEntry = parameters.input;
-		}
-		// If the model is an array of models.
 		if (Array.isArray(parameters.model)) {
-			// For each model.
-			for (const property in parameters.model) {
-				// If the input validates true with this model.
-				if (this.validate({
-					model: parameters.model[property],
-					input: parameters.input,
-					path: parameters.path,
-					inputEntry: parameters.inputEntry,
-					recursive: true,
-					debug: parameters.debug
-				}) === true) {
-					// If any of the models validate true, return true for the whole validate execution.
+			for (const individualModel of parameters.model) {
+				const validationResult = this.validate({
+					model: individualModel,
+					input: parameters.input
+				});
+				if (validationResult === true) {
 					return true;
 				}
 			}
-			// If the input doesn't validate true against any of the models.
+			// If the input doesn't successfully validate with any of the models.
 			return false;
 		}
-		// If the model is a singular model.
 		else {
-			// Return the result from the validation;
 			return this._validate({
 				model: parameters.model,
-				input: parameters.input,
-				path: parameters.path,
-				inputEntry: parameters.inputEntry,
-				debug: parameters.debug
+				input: parameters.input
 			});
 		}
 	}
 
 	/**
 	 * Validate an input against a single model.
-	 * @param {object} parameters - One object to house all parameters for easier workability.
-	 * @param {object} parameters.model - The model to compare the input to.
-	 * @param {*} parameters.input - The input to compare to the model.
-	 * @param {array} [parameters.path] - The model to compare the input to. Must be an array.
-	 * @param {*} [parameters.inputEntry] - The original entered input (for internal use only).
-	 * @param {boolean} [parameters.debug] - A flag indicating if helpful log messages should be output.
+	 * @param {object} parameters - One object to contain all parameters.
+	 * @param {object} parameters.model - The single model for the input to be compared to.
+	 * @param {*} parameters.input - The input to validate.
 	 * @returns {boolean} - The validation result.
 	 */
 
 	static _validate(parameters) {
-		if (parameters.debug) {
-			console.log('static _validate(parameters)');
-			console.log(parameters);
-		}
-		// For each property in the model.
-		// Return false if any return false.
+		const validateProperty = {
+			required: this.validateRequired,
+			custom: this.validateCustom,
+			type: this.validateType,
+			allowUnvalidatedProperties: this.validateAllowUnvalidatedProperties
+		};
 		for (const property in parameters.model) {
-			if (property === 'type') {
-				if (!this.validateType(parameters.model[property], parameters.input)) {
-					return false;
+			if (validateProperty.hasOwnProperty(property)) {
+				try {
+					const propertValidationresult = validateProperty[property](parameters.model, parameters.input);
 				}
-			}
-			else if (property === 'exact') {
-				if (!this.validateExact(parameters.model[property], parameters.input)) {
-					return false;
-				}
-			}
-			else if (property === 'instanceOf') {
-				if (!this.validateInstanceOf(parameters.model[property], parameters.input)) {
-					return false;
-				}
-			}
-			else if (property === 'custom') {
-				if (!this.validateCustom({
-					validator: parameters.model[property].validator,
-					input: parameters.input,
-					path: parameters.path,
-					inputEntry: parameters.inputEntry
-				})) {
-					return false;
-				}
-			}
-			else if (property === 'allPropertiesSchema') {
-				if (!this.validateAllPropertiesSchema({
-					allPropertiesSchema: parameters.model[property],
-					input: parameters.input,
-					path: parameters.path,
-					inputEntry: parameters.inputEntry
-				})) {
-					return false;
-				}
-			}
-			else if (property === 'propertySchema') {
-				if (!this.validatePropertySchema({
-					propertySchema: parameters.model[property],
-					input: parameters.input,
-					path: parameters.path,
-					inputEntry: parameters.inputEntry
-				})) {
+				catch(error) {
+					console.log(error);
 					return false;
 				}
 			}
 		}
-		// If no other model properties validate false, return true.
 		return true;
 	}
 
-	static validateType(type, input) {
-		if (type === 'object') {
-			// If input is an object, and not null (null has the type object for legacy language reasons).
-			if (typeof input === 'object' && input !== null) {
-				return true;
-			}
-		}
-		else if (type === 'unset') {
-			if (input === undefined || input === null) {
-				return true;
-			}
-		}
-		else if (type === 'boolean' ||
-		type === 'number' ||
-		type === 'string' ||
-		type === 'function') {
-			if (typeof input === type) {
-				return true;
-			}
-		}
-		// If the input is not the correct type, or the passed model type is not one we check for.
-		return false;
-	}
-
-	static validateExact(exact, input) {
-		// If exact parameter is an array.
-		if (Array.isArray(exact)) {
-			// For each exact value in array.
-			for (const property in exact) {
-				// Recursively call exact validation.
-				const validationResult = this.validateExact(exact[property], input);
-				// If any of the validation results are true.
-				if (validationResult === true) {
-					// Return true, canceling further comparisons.
-					return true;
-				}
-			}
-		}
-		// If the exact parameter is a single value.
-		else {
-			// If the input equals the exact value.
-			if (input === exact) {
-				return true;
-			}
-		}
-		// If the input does not match the exact value(s).
-		return false;
-	}
-
-	static validateInstanceOf(instance, input) {
-		// If instance parameter is an array.
-		if (Array.isArray(instance)) {
-			// For each instance value in array.
-			for (const property in instance) {
-				// Recursively call instanceOf validation.
-				const validationResult = this.validateInstanceOf(instance[property], input);
-				// If any of the validation results are true.
-				if (validationResult === true) {
-					// Return true, canceling further comparisons.
-					return true;
-				}
-			}
-		}
-		// If the instance parameter is a single value.
-		else {
-			// If the input is an instance of the instance parameter.
-			if (input instanceof instance) {
-				return true;
-			}
-		}
-		// If the input does not match the exact value(s).
-		return false;
-	}
-
-	static validateCustom(parameters) {
-		// If path is not an array.
-		if (!Array.isArray(parameters.path)) {
-			// Initialize the path array.
-			parameters.path = [];
-		}
-		// Clone the path array to prevent accidental changes to the current path.
-		const pathClone = parameters.path.splice(0);
-		// Get the validation result.
-		const validationResult = parameters.validator(parameters.input, pathClone, parameters.inputEntry);
-		// If the validation result is a truthy value.
-		if (validationResult) {
-			return true;
-		}
-		// if the validation value is not truthy.
-		else {
-			return false;
-		}
-	}
-
-	static validateAllPropertiesSchema(parameters) {
-		// If path is not an array.
-		if (!Array.isArray(parameters.path)) {
-			// Initialize the path array.
-			parameters.path = [];
-		}
-		// For each property in the input.
-		for (const property in parameters.input) {
-			// Append this property to the path array.
-			parameters.path.push(property);
-			// Validate the property value against `allPropertiesSchema`.
-			const validationResult = this.validate({
-				model: parameters.allPropertiesSchema, 
-				input: parameters.input[property], 
-				path: parameters.path, 
-				inputEntry: parameters.inputEntry, 
-				recursive: true
-			});
-			// Remove this property from the path array.
-			parameters.path.pop();
-			// If the input value validates false.
-			if (!validationResult) {
-				return false;
-			}
-		}
-		// If none of the input values validate false.
-		return true;
-	}
-
-	static validatePropertySchema(parameters) {
-		// For each property in the `propertySchema`.
-		for (const property in parameters.propertySchema) {
-			// Append this property to the path array.
-			parameters.path.push(property);
-			// Validate the property value against the same property in `propertySchema`.
-			const validationResult = this.validate({
-				model: parameters.propertySchema[property], 
-				input: parameters.input[property], 
-				path: parameters.path, 
-				inputEntry: parameters.inputEntry, 
-				recursive: true
-			});
-			// Remove this property from the path array.
-			parameters.path.pop();
-			// If the input value validates false.
-			if (!validationResult) {
-				return false;
-			}
-		}
-		// If none of the input values validate false.
-		return true;
-	}
-
-	/*
-	 *
+	/**
+	 * Validate the required property.
+	 * @param {object} model - The model.
+	 * @param {*} input - The input to validate.
+	 * @returns {boolean} - The validation result.
 	 */
 
-	static resolvePath(path, object) {
-		// Initialize a variable to hold the path as we resolve it.
-		let resolvedPath;
-		// If the path array is not empty.
-		if (path.length > 0) {
-			// For each property in the path array.
-			for (const property in path) {
-				// Get the path segment.
-				let pathSegemnt = path[property];
-				// Traverse to the path segment, building on the previous segments.
-				resolvedPath = object[pathSegemnt];
+	static validateRequired(model, input) {
+		if (model.required === true) {
+			if (input !== undefined && input !== null) {
+				return true;
 			}
-			// Return the final resolved path.
-			return resolvedPath;
-		}
-		// If the path array is empty.
-		else {
-			// Return the original object.
-			return object;
+			throw new Error('Required validation failed. The value must not be null or undefined.');
 		}
 	}
+
+	/**
+	 * Validate the custom property.
+	 * @param {object} model - The model.
+	 * @param {*} input - The input to validate.
+	 * @returns {boolean} - The validation result.
+	 */
+
+	static validateCustom(model, input) {
+		console.log('validateCustom()');
+		console.log(this);
+		return model.custom(input);
+	}
+
+	/**
+	 * Validate the type property.
+	 * @param {object} model - The model.
+	 * @param {*} input - The input to validate.
+	 * @returns {boolean} - The validation result.
+	 */
+
+	static validateType(model, input) {
+
+		if (model.type === 'object') {
+			if (typeof input === 'object'
+			&& !Array.isArray(input) &&
+			input !== null) {
+				return true;
+			}
+		}
+		
+		else if (model.type === 'array') {
+			if (Array.isArray(input)) {
+				return true;
+			}
+		}
+
+		else if (model.type === 'boolean' ||
+		model.type === 'number' ||
+		model.type === 'string' ||
+		model.type === 'function') {
+			if (typeof input === model.type) {
+				return true;
+			}
+		}
+	
+		throw new Error('Type validation failed. The value must match the value of ' + model.type + '.');
+
+	}
+
+	/**
+	 * Validate the allowUnvalidatedProperties property.
+	 * @param {object} model - The model.
+	 * @param {*} input - The input to validate.
+	 * @returns {boolean} - The validation result.
+	 */
+
+	static validateAllowUnvalidatedProperties(model, input) {
+
+		const errorMessagePrefix = 'AllowUnvalidatedProperties validation failed. Unvalidated properties are not allowed. Validated properties include: ';
+		
+		if (model.allowUnvalidatedProperties === false) {
+			if (Object.keys(input).length > 0) {
+				if (!model.hasOwnProperty('propertySchema') || Object.keys(model.propertySchema).length < 1) {
+					throw new Error(errorMessagePrefix + '(No properties found within model `propertySchema` property).');
+				}
+			}
+			for (const inputProperty of Object.keys(input)) {
+				if (!model.propertySchema.hasOwnProperty(inputProperty)) {
+					throw new Error(errorMessagePrefix + Object.keys(model.propertySchema));
+				}
+			
+			}
+		}
+		
+		return true;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -478,21 +263,32 @@ const Schema = class {
 
 
 	/**
+	 * Create a schema.
+	 * @param {object} model - The model to compare to.
+	 * @param {object} [parentModel=null] - The parent model (meant for internal use).
+	 */
+	
+	constructor(model, parentModel = null) {
+		// Set the input model on the instance.
+		this.model = model;
+		this.parentModel = parentModel;
+	}
+
+	/**
 	 * Set the model.
-	 * @param {object} model - The schema blueprints.
+	 * @param {object} model - The model.
 	 */
 
 	set model(model) {
-		// Validate the model against the Schema class model.
+		// this._model = model;
 		let validationResult = this.constructor.validate({
 			model: this.constructor.model,
 			input: model
 		});
-		// If the model is valid.
-		if (validationResult) {
+		console.log('validate model: ', validationResult);
+		if (validationResult === true) {
 			this._model = model;
 		}
-		// If the model is invalid.
 		else {
 			console.error('Model syntax is invalid.');
 		}
@@ -500,21 +296,24 @@ const Schema = class {
 
 	/**
 	 * Get the model.
-	 * @returns {object} model - The schema blueprints.
+	 * @returns {object} model - The model.
 	 */
 
-	 get model() {
-		 return this._model;
-	 }
-
-	/**
-	 * Create a schema using the input as the model.
-	 * @param {object} model - The schema blueprints.
-	 */
-
-	constructor(model) {
-		// Set the input model on the instance.
-		this.model = model;
+	get model() {
+		return this._model;
 	}
 
+	/**
+	 * Validate an input.
+	 * @param {*} input - The value to validate.
+	 * @returns {boolean} model - The validation result.
+	 */
+
+	validate(input) {
+		return this.constructor.validate({
+			model: this.model,
+			input: input
+		});
+	}
+	
 };

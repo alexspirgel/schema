@@ -3,25 +3,382 @@
 <head>
 	<title>Schema</title>
 	<script type="text/javascript" src="index.js"></script>
+	<style>
+		body {
+			background: gray;
+		}
+	</style>
 </head>
 <body>
 	<script type="text/javascript">
-	console.dir(Schema);
-	var testModel = {
-		required: true,
-		type: 'number',
-		custom: (input) => {
-			if (input === 123) {
-				return true;
+		console.log('Running tests...');
+
+		const testCases = [
+			{
+				validator: Schema.validateRequired,
+				value: true,
+				tests: [
+					{
+						input: true,
+						expected: true
+					},
+					{
+						input: 123,
+						expected: true
+					},
+					{
+						input: 'abc',
+						expected: true
+					},
+					{
+						input: () => {},
+						expected: true
+					},
+					{
+						input: [],
+						expected: true
+					},
+					{
+						input: {},
+						expected: true
+					},
+					{
+						input: NaN,
+						expected: true
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+			{
+				validator: Schema.validateRequired,
+				value: false,
+				tests: [
+					{
+						input: true,
+						expected: true
+					},
+					{
+						input: 123,
+						expected: true
+					},
+					{
+						input: 'abc',
+						expected: true
+					},
+					{
+						input: () => {},
+						expected: true
+					},
+					{
+						input: [],
+						expected: true
+					},
+					{
+						input: {},
+						expected: true
+					},
+					{
+						input: NaN,
+						expected: true
+					},
+					{
+						input: null,
+						expected: true
+					},
+					{
+						input: undefined,
+						expected: true
+					}
+				]
+			},
+			{
+				validator: Schema.validateType,
+				value: 'boolean',
+				tests: [
+					{
+						input: true,
+						expected: true
+					},
+					{
+						input: 123,
+						expected: false
+					},
+					{
+						input: 'abc',
+						expected: false
+					},
+					{
+						input: () => {},
+						expected: false
+					},
+					{
+						input: [],
+						expected: false
+					},
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+			{
+				validator: Schema.validateType,
+				value: 'number',
+				tests: [
+					{
+						input: true,
+						expected: false
+					},
+					{
+						input: 123,
+						expected: true
+					},
+					{
+						input: 'abc',
+						expected: false
+					},
+					{
+						input: () => {},
+						expected: false
+					},
+					{
+						input: [],
+						expected: false
+					},
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+			{
+				validator: Schema.validateType,
+				value: 'string',
+				tests: [
+					{
+						input: true,
+						expected: false
+					},
+					{
+						input: 123,
+						expected: false
+					},
+					{
+						input: 'abc',
+						expected: true
+					},
+					{
+						input: () => {},
+						expected: false
+					},
+					{
+						input: [],
+						expected: false
+					},
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+			{
+				validator: Schema.validateType,
+				value: 'array',
+				tests: [
+					{
+						input: true,
+						expected: false
+					},
+					{
+						input: 123,
+						expected: false
+					},
+					{
+						input: 'abc',
+						expected: false
+					},
+					{
+						input: () => {},
+						expected: false
+					},
+					{
+						input: [],
+						expected: true
+					},
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+			{
+				validator: Schema.validateType,
+				value: 'object',
+				tests: [
+					{
+						input: true,
+						expected: false
+					},
+					{
+						input: 123,
+						expected: false
+					},
+					{
+						input: 'abc',
+						expected: false
+					},
+					{
+						input: () => {},
+						expected: false
+					},
+					{
+						input: [],
+						expected: false
+					},
+					{
+						input: {},
+						expected: true
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+			{
+				validator: Schema.validateType,
+				value: 'function',
+				tests: [
+					{
+						input: true,
+						expected: false
+					},
+					{
+						input: 123,
+						expected: false
+					},
+					{
+						input: 'abc',
+						expected: false
+					},
+					{
+						input: () => {},
+						expected: true
+					},
+					{
+						input: [],
+						expected: false
+					},
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+		];
+	
+		for (const testCase of testCases) {
+			for (const test of testCase.tests) {
+				try {
+					const validationResult = testCase.validator(testCase.value, test.input);
+					if (validationResult !== test.expected) {
+						console.warn('Fail', {
+							validator: testCase.validator,
+							value: testCase.value,
+							input: test.input,
+							expected: test.expected
+						});
+					}
+				}
+				catch {
+					if (test.expected !== false) {
+						console.warn('Fail', {
+							validator: testCase.validator,
+							value: testCase.value,
+							input: test.input,
+							expected: test.expected
+						});
+					}
+				}
 			}
-			throw new Error('Custom error message.');
 		}
-	};
-	var testSchema = new Schema(testModel);
-	console.dir(testSchema);
-	var testInput = 123;
-	console.log('testInput: ', testInput);
-	console.log('validate input: ', testSchema.validate(testInput));
+
+		console.log('Completed tests.');
 	</script>
 </body>
 </html>

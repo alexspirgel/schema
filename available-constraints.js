@@ -13,7 +13,7 @@ schema = {
 			return true;
 		}
 		else {
-			throw new Error('Custom error message.');
+			throw new Schema.ValidationError(`Custom error message.`);
 		}
 	}
 }
@@ -31,7 +31,8 @@ schema = {
 	greaterThanOrEqualTo: 0, // number
 	lessThan: 101, // number
 	lessThanOrEqualTo: 100, // number
-	multipleOf: 2, // number or array of numbers
+	divisibleBy: 2, // number or array of numbers
+	notDivisibleBy: 2, // number or array of numbers
 	exactValue: 123, // single value or an array of values that match the type
 }
 

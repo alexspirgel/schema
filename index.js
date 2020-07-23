@@ -21,6 +21,34 @@
 				method: this.validateType
 			},
 			{
+				property: 'exactValue',
+				method: this.validateExactValue
+			},
+			{
+				property: 'greaterThan',
+				method: this.validateGreaterThan
+			},
+			{
+				property: 'greaterThanOrEqualTo',
+				method: this.validateGreaterThanOrEqualTo
+			},
+			{
+				property: 'lessThan',
+				method: this.validateLessThan
+			},
+			{
+				property: 'lessThanOrEqualTo',
+				method: this.validateLessThanOrEqualTo
+			},
+			{
+				property: 'divisibleBy',
+				method: this.validateDivisibleBy
+			},
+			{
+				property: 'notDivisibleBy',
+				method: this.validateNotDivisibleBy
+			},
+			{
 				property: 'itemSchema',
 				method: this.validateItemSchema
 			}
@@ -37,7 +65,7 @@
 	static validateRequired(modelPathManager, inputPathManager) {
 		if (modelPathManager.value === true) {
 			if (inputPathManager.value === undefined || inputPathManager.value === null) {
-				throw new Schema.ValidationError(`Required validation failed. The model required property is set to ${modelPathManager.value}. The input must not be null or undefined.`);
+				throw new Schema.ValidationError(`Property 'required' validation failed. The input must not be null or undefined.`);
 			}
 		}
 		return true;
@@ -71,9 +99,176 @@
 				return true;
 			}
 		}
-		throw new Schema.ValidationError(`Type validation failed. The model type property is set to ${modelPathManager.value}. The input type must match.`);
+		throw new Schema.ValidationError(`Property 'type' validation failed. The input type must match.`);
 	}
 
+	/**
+	 * Validate a exactValue property.
+	 * @param {object} modelPathManager - The model path manager containing the validation property value.
+	 * @param {object} inputPathManager - The input path manager containing the input value to validate.
+	 * @returns {boolean} - The validation result.
+	 */
+
+	static validateExactValue(modelPathManager, inputPathManager) {
+		if (Array.isArray(modelPathManager.value)) {
+			for (const value of modelPathManager.value) {
+				if (inputPathManager.value === value) {
+					return true;
+				}
+			}
+		}
+		else {
+			if (inputPathManager.value === modelPathManager.value) {
+				return true;
+			}
+		}
+		throw new Schema.ValidationError(`Property 'exactValue' validation failed. The input must be an exact match of the value or one of the values in an array of values.`);
+	}
+
+	/**
+	 * Validate a greaterThan property.
+	 * @param {object} modelPathManager - The model path manager containing the validation property value.
+	 * @param {object} inputPathManager - The input path manager containing the input value to validate.
+	 * @returns {boolean} - The validation result.
+	 */
+
+	static validateGreaterThan(modelPathManager, inputPathManager) {
+		if (inputPathManager.value > modelPathManager.value) {
+			return true;
+		}
+		else {
+			throw new Schema.ValidationError(`Property 'greaterThan' validation failed. The input must be greater than the value.`);
+		}
+	}
+
+	/**
+	 * Validate a greaterThanOrEqualTo property.
+	 * @param {object} modelPathManager - The model path manager containing the validation property value.
+	 * @param {object} inputPathManager - The input path manager containing the input value to validate.
+	 * @returns {boolean} - The validation result.
+	 */
+
+	static validateGreaterThanOrEqualTo(modelPathManager, inputPathManager) {
+		if (inputPathManager.value >= modelPathManager.value) {
+			return true;
+		}
+		else {
+			throw new Schema.ValidationError(`Property 'greaterThanOrEqualTo' validation failed. The input must be greater than or equal to the value.`);
+		}
+	}
+
+	/**
+	 * Validate a lessThan property.
+	 * @param {object} modelPathManager - The model path manager containing the validation property value.
+	 * @param {object} inputPathManager - The input path manager containing the input value to validate.
+	 * @returns {boolean} - The validation result.
+	 */
+
+	static validateLessThan(modelPathManager, inputPathManager) {
+		if (inputPathManager.value < modelPathManager.value) {
+			return true;
+		}
+		else {
+			throw new Schema.ValidationError(`Property 'lessThan' validation failed. The input must be less than the value.`);
+		}
+	}
+
+	/**
+	 * Validate a lessThanOrEqualTo property.
+	 * @param {object} modelPathManager - The model path manager containing the validation property value.
+	 * @param {object} inputPathManager - The input path manager containing the input value to validate.
+	 * @returns {boolean} - The validation result.
+	 */
+
+	static validateLessThanOrEqualTo(modelPathManager, inputPathManager) {
+		if (inputPathManager.value <= modelPathManager.value) {
+			return true;
+		}
+		else {
+			throw new Schema.ValidationError(`Property 'lessThanOrEqualTo' validation failed. The input must be less than or equal to the value.`);
+		}
+	}
+
+	/**
+	 * Validate a divisibleBy property.
+	 * @param {object} modelPathManager - The model path manager containing the validation property value.
+	 * @param {object} inputPathManager - The input path manager containing the input value to validate.
+	 * @returns {boolean} - The validation result.
+	 */
+
+	static validateDivisibleBy(modelPathManager, inputPathManager) {
+		if (Array.isArray(modelPathManager.value)) {
+			for (const value of modelPathManager.value) {
+				if (inputPathManager.value % value === 0) {
+					return true;
+				}
+			}
+		}
+		else {
+			if (inputPathManager.value % modelPathManager.value === 0) {
+				return true;
+			}
+		}
+		throw new Schema.ValidationError(`Property 'divisibleBy' validation failed. The input must be divisible by the value or one of the values in an array of values.`);
+	}
+
+	/**
+	 * Validate a notDivisibleBy property.
+	 * @param {object} modelPathManager - The model path manager containing the validation property value.
+	 * @param {object} inputPathManager - The input path manager containing the input value to validate.
+	 * @returns {boolean} - The validation result.
+	 */
+
+	static validateNotDivisibleBy(modelPathManager, inputPathManager) {
+		if (!isNaN(inputPathManager.value)) {
+			if (Array.isArray(modelPathManager.value)) {
+				for (const value of modelPathManager.value) {
+					if (inputPathManager.value % value !== 0) {
+						return true;
+					}
+				}
+			}
+			else {
+				if (inputPathManager.value % modelPathManager.value !== 0) {
+					return true;
+				}
+			}
+		}
+		throw new Schema.ValidationError(`Property 'notDivisibleBy' validation failed. The input must not be divisible by the value or one of the values in an array of values.`);
+	}
+
+	/**
+	 * Validate a minimumCharacters property.
+	 * @param {object} modelPathManager - The model path manager containing the validation property value.
+	 * @param {object} inputPathManager - The input path manager containing the input value to validate.
+	 * @returns {boolean} - The validation result.
+	 */
+
+	static validateMinimumCharacters(modelPathManager, inputPathManager) {
+		if (inputPathManager.value.length >= modelPathManager.value) {
+			return true;
+		}
+		else {
+			throw new Schema.ValidationError(`Property 'minimumCharacters' validation failed. The input must have a character count greater than or equal to the value.`);
+		}
+	}
+
+	/**
+	 * Validate a maximumCharacters property.
+	 * @param {object} modelPathManager - The model path manager containing the validation property value.
+	 * @param {object} inputPathManager - The input path manager containing the input value to validate.
+	 * @returns {boolean} - The validation result.
+	 */
+
+	static validateMaximumCharacters(modelPathManager, inputPathManager) {
+		if (inputPathManager.value.length <= modelPathManager.value) {
+			return true;
+		}
+		else {
+			throw new Schema.ValidationError(`Property 'maximumCharacters' validation failed. The input must have a character count less than or equal to the value.`);
+		}
+	}
+	
 	/**
 	 * Validate an itemSchema property.
 	 * @param {object} modelPathManager - The model path manager containing the validation property value.
@@ -93,19 +288,6 @@
 		}
 		return true;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	/**
 	 * Create a schema.
@@ -176,7 +358,6 @@
 		}
 
 		if (errorStyle === 'throw') {
-			console.log('validationErrors', validationErrors);
 			throw new Error(validationErrors.generateFormattedMessage());
 		}
 		else if (errorStyle === 'boolean') {
@@ -312,10 +493,21 @@ Schema.ValidationErrors = class {
 	generateFormattedMessage() {
 		let message = `Schema Errors:\n`;
 		for (const error of this.errors) {
-			const inputPath = error.inputPathManager.path.map((pathSegment) => {
-				return `['` + pathSegment + `']`;
-			});
-			message = message + `\nInput Path: ${inputPath}\nMessage: ${error.message}\n`;
+			let modelPath = 'root';
+			if (error.modelPathManager.path.length > 0) {
+				modelPath = error.modelPathManager.path.map((pathSegment) => {
+					return `['` + pathSegment + `']`;
+				});
+				modelPath = modelPath.join('');
+			}
+			let inputPath = 'root';
+			if (error.inputPathManager.path.length > 0) {
+				inputPath = error.inputPathManager.path.map((pathSegment) => {
+					return `['` + pathSegment + `']`;
+				});
+				inputPath = inputPath.join('');
+			}
+			message = message + `\nModel Path: ${modelPath}\nInput Path: ${inputPath}\nMessage: ${error.message}\n`;
 		}
 		return message;
 	}

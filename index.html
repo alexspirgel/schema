@@ -13,14 +13,17 @@
 		<script type="text/javascript">
 		console.dir(Schema);
 		var schema = new Schema({
-			required: true,
 			type: 'array',
 			itemSchema: {
-				type: 'number'
+				type: 'array',
+				itemSchema: {
+					type: 'number',
+					greaterThanOrEqualTo: 2
+				}
 			}
 		});
 		console.dir(schema);
-		const validationResult = schema.validate([1,2,'3']);
+		const validationResult = schema.validate([[5,2,3],[4,2,3]]);
 		console.log('validationResult', validationResult);
 		</script>
 	</body>

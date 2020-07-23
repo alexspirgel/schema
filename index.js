@@ -220,21 +220,23 @@
 	 */
 
 	static validateNotDivisibleBy(modelPathManager, inputPathManager) {
-		if (!isNaN(inputPathManager.value)) {
-			if (Array.isArray(modelPathManager.value)) {
-				for (const value of modelPathManager.value) {
-					if (inputPathManager.value % value !== 0) {
-						return true;
-					}
-				}
-			}
-			else {
-				if (inputPathManager.value % modelPathManager.value !== 0) {
-					return true;
+		let flag = false;
+		if (Array.isArray(modelPathManager.value)) {
+			for (const value of modelPathManager.value) {
+				if (inputPathManager.value % value === 0) {
+					flag = true;
 				}
 			}
 		}
-		throw new Schema.ValidationError(`Property 'notDivisibleBy' validation failed. The input must not be divisible by the value or one of the values in an array of values.`);
+		else {
+			if (inputPathManager.value % modelPathManager.value === 0) {
+				flag = true;
+			}
+		}
+		if (flag || isNaN(inputPathManager.value)) {
+			throw new Schema.ValidationError(`Property 'notDivisibleBy' validation failed. The input must not be divisible by the value or one of the values in an array of values.`);
+		}
+		return true;
 	}
 
 	/**

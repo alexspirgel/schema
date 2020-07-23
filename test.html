@@ -887,6 +887,80 @@
 				]
 			},
 			{
+				validator: Schema.validateDivisibleBy,
+				value: [3, 5],
+				tests: [
+					{
+						input: -21,
+						expected: true
+					},
+					{
+						input: -20,
+						expected: true
+					},
+					{
+						input: -19,
+						expected: false
+					},
+					{
+						input: -6,
+						expected: true
+					},
+					{
+						input: -5,
+						expected: true
+					},
+					{
+						input: -4,
+						expected: false
+					},
+					{
+						input: -1,
+						expected: false
+					},
+					{
+						input: -0,
+						expected: true
+					},
+					{
+						input: 0,
+						expected: true
+					},
+					{
+						input: 1,
+						expected: false
+					},
+					{
+						input: 4,
+						expected: false
+					},
+					{
+						input: 5,
+						expected: true
+					},
+					{
+						input: 6,
+						expected: true
+					},
+					{
+						input: 19,
+						expected: false
+					},
+					{
+						input: 20,
+						expected: true
+					},
+					{
+						input: 21,
+						expected: true
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+				]
+			},
+			{
 				validator: Schema.validateNotDivisibleBy,
 				value: 5,
 				tests: [
@@ -953,6 +1027,80 @@
 					{
 						input: 21,
 						expected: true
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateNotDivisibleBy,
+				value: [3, 5],
+				tests: [
+					{
+						input: -21,
+						expected: false
+					},
+					{
+						input: -20,
+						expected: false
+					},
+					{
+						input: -19,
+						expected: true
+					},
+					{
+						input: -6,
+						expected: false
+					},
+					{
+						input: -5,
+						expected: false
+					},
+					{
+						input: -4,
+						expected: true
+					},
+					{
+						input: -1,
+						expected: true
+					},
+					{
+						input: -0,
+						expected: false
+					},
+					{
+						input: 0,
+						expected: false
+					},
+					{
+						input: 1,
+						expected: true
+					},
+					{
+						input: 4,
+						expected: true
+					},
+					{
+						input: 5,
+						expected: false
+					},
+					{
+						input: 6,
+						expected: false
+					},
+					{
+						input: 19,
+						expected: true
+					},
+					{
+						input: 20,
+						expected: false
+					},
+					{
+						input: 21,
+						expected: false
 					},
 					{
 						input: NaN,

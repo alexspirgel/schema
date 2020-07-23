@@ -355,7 +355,10 @@
 		for (const testCase of testCases) {
 			for (const test of testCase.tests) {
 				try {
-					const validationResult = testCase.validator(testCase.value, test.input);
+					const validationResult = testCase.validator({
+						value: testCase.value,
+						input: test.input
+					});
 					if (validationResult !== test.expected) {
 						console.warn('Fail', {
 							validator: testCase.validator,

@@ -3,43 +3,7 @@
  * https://github.com/alexspirgel/schema
  */
 
-const DataPathManager = class {
-	constructor(data, path = []) {
-		this.data = data;
-		this.path = path;
-	}
-	set path(path) {
-		if (Array.isArray(path)) {
-			this._path = path;
-		}
-	}
-	get path() {
-		return this._path;
-	}
-	addPathSegment(pathSegment) {
-		this.path.push(pathSegment);
-	}
-	removePathSegment() {
-		this.path.splice(-1, 1);
-	}
-	isRoot() {
-		if (this.path.length <= 0) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	get value() {
-		let value = this.data;
-		for (let path of this.path) {
-			value = value[path];
-		}
-		return value;
-	}
-};
-
-const Schema = class {
+ const Schema = class {
 
 	/**
 	 * Validation properties will be tested in order that they appear in this array.
@@ -55,21 +19,25 @@ const Schema = class {
 			{
 				property: 'type',
 				method: this.validateType
+			},
+			{
+				property: 'itemSchema',
+				method: this.validateItemSchema
 			}
 		]
 	}
 
 	/**
 	 * Validate a required property.
-	 * @param {boolean} required - The required value to use when validating the input.
-	 * @param {*} input - The input to validate.
+	 * @param {object} modelPathManager - The model path manager containing the validation property value.
+	 * @param {object} inputPathManager - The input path manager containing the input value to validate.
 	 * @returns {boolean} - The validation result.
 	 */
 
-	static validateRequired(required, input) {
-		if (required === true) {
-			if (input === undefined || input === null) {
-				throw new Error(`Required validation failed. The model required property is set to ${required}. The input must not be null or undefined.`);
+	static validateRequired(modelPathManager, inputPathManager) {
+		if (modelPathManager.value === true) {
+			if (inputPathManager.value === undefined || inputPathManager.value === null) {
+				throw new Schema.ValidationError(`Required validation failed. The model required property is set to ${modelPathManager.value}. The input must not be null or undefined.`);
 			}
 		}
 		return true;
@@ -77,175 +45,278 @@ const Schema = class {
 
 	/**
 	 * Validate a type property.
-	 * @param {boolean} type - The required value to use when validating the input.
-	 * @param {*} input - The input to validate.
+	 * @param {object} modelPathManager - The model path manager containing the validation property value.
+	 * @param {object} inputPathManager - The input path manager containing the input value to validate.
 	 * @returns {boolean} - The validation result.
 	 */
 
-	static validateType(type, input) {
-		if (type === 'number') {
-			if (typeof input === 'number' && !isNaN(input)) {
+	static validateType(modelPathManager, inputPathManager) {
+		if (modelPathManager.value === 'number') {
+			if (typeof inputPathManager.value === 'number' && !isNaN(inputPathManager.value)) {
 				return true;
 			}
 		}
-		else if (type === 'object') {
-			if (typeof input === 'object' && !Array.isArray(input) && input !== null) {
+		else if (modelPathManager.value === 'object') {
+			if (typeof inputPathManager.value === 'object' && !Array.isArray(inputPathManager.value) && inputPathManager.value !== null) {
 				return true;
 			}
 		}
-		else if (type === 'array') {
-			if (Array.isArray(input)) {
+		else if (modelPathManager.value === 'array') {
+			if (Array.isArray(inputPathManager.value)) {
 				return true;
 			}
 		}
-		else if (type === 'boolean' || type === 'string' || type === 'function') {
-			if (typeof input === type) {
+		else if (modelPathManager.value === 'boolean' || modelPathManager.value === 'string' || modelPathManager.value === 'function') {
+			if (typeof inputPathManager.value === modelPathManager.value) {
 				return true;
 			}
 		}
-		throw new Error(`Type validation failed. The model type property is set to ${type}. The input type must match.`);
+		throw new Schema.ValidationError(`Type validation failed. The model type property is set to ${modelPathManager.value}. The input type must match.`);
 	}
 
 	/**
 	 * Validate an itemSchema property.
-	 * @param {boolean} itemSchema - The schema to use when validating the items in the input array.
-	 * @param {*} input - The input to validate.
+	 * @param {object} modelPathManager - The model path manager containing the validation property value.
+	 * @param {object} inputPathManager - The input path manager containing the input value to validate.
 	 * @returns {boolean} - The validation result.
 	 */
 
-	static validateItemSchema(itemSchema, input) {
-		for (const item of input) {}
+	static validateItemSchema(modelPathManager, inputPathManager) {
+		const itemSchema = new Schema(modelPathManager);
+		for (let inputIndex = 0; inputIndex < inputPathManager.value.length; inputIndex++) {
+			const inputItemPathManager = inputPathManager.clone();
+			inputItemPathManager.addPathSegment(inputIndex);
+			const validationResult = itemSchema.validate(inputItemPathManager, 'array');
+			if (validationResult !== true) {
+				return validationResult;
+			}
+		}
+		return true;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	/**
 	 * Create a schema.
-	 * @param {object} model - The model to compare to.
+	 * @param {object} modelPathManager - The model to compare to.
 	 */
 	
-	constructor(model = {}, modelPath = null, inputPath = null) {
-		this.model = model;
+	constructor(modelPathManager = {}) {
+		this.modelPathManager = modelPathManager;
 	}
 
 	/**
-	 * Set the model.
-	 * @param {object} model - The model.
+	 * Set the model path manager.
+	 * @param {object} modelPathManager - The model path manager.
 	 */
 
-	set model(model) {
-		this._model = this.initializeNestedSchema(model);
-	}
-
-	/**
-	 * Get the model.
-	 * @returns {object} model - The model.
-	 */
-
-	get model() {
-		return this._model;
-	}
-
-	/**
-	 * Initialize nested schema.
-	 * @param {object} model - The model.
-	 * @returns {object} The model with initialized nested schema.
-	 */
-
-	initializeNestedSchema(model) {
-		if (Array.isArray(model)) {
-			for (let modelItem of model) {
-				modelItem = this.initializeNestedSchema(modelItem);
-			}
+	set modelPathManager(modelPathManager) {
+		if (!(modelPathManager instanceof Schema.DataPathManager)) {
+			modelPathManager = new Schema.DataPathManager(modelPathManager);
 		}
-		else {
-			if (model.hasOwnProperty('itemSchema')) {
-				model.itemSchema = new this.constructor(model.itemSchema, this);
-			}
-			if (model.hasOwnProperty('propertySchema')) {
-				for (const property in model.propertySchema) {
-					model.propertySchema[property] = new this.constructor(model.propertySchema[property], this);
-				}
-			}
-		}
-		return model;
+		this._modelPathManager = modelPathManager;
+	}
+
+	/**
+	 * Get the model path manager.
+	 * @returns {object} modelPathManager - The model path manager.
+	 */
+
+	get modelPathManager() {
+		return this._modelPathManager;
 	}
 
 	/**
 	 * Validate an input.
-	 * @param {*} input - The input to validate.
-	 * @param {*} [suppressErrors=false] - Optional flag that when enabled will prevent errors from being thrown in favor of returning false.
+	 * @param {*} inputPathManager - The input to validate.
+	 * @param {('throw'|'boolean'|'array')} errorHandling - The method of error handling.
 	 * @returns {boolean} The validation result.
 	 */
  
-	validate(input, suppressErrors = false) {
-		console.log('validate()');
-		let validationErrors = [];
-		if (Array.isArray(this.model)) {
-			for (let modelItem of this.model) {
-				try {
-					this._validate(modelItem, input);
+	validate(inputPathManager, errorStyle = 'throw') {
+
+		if (!(inputPathManager instanceof Schema.DataPathManager)) {
+			inputPathManager = new Schema.DataPathManager(inputPathManager);
+		}
+
+		let validationErrors = new Schema.ValidationErrors();
+
+		if (Array.isArray(this.modelPathManager.value)) {
+			for (let modelIndex = 0; modelIndex < this.modelPathManager.value.length; modelIndex++) {
+				const modelItemPathManager = this.modelPathManager.clone();
+				modelItemPathManager.addPathSegment(modelIndex);
+				const validationResult = this._validate(modelItemPathManager, inputPathManager);
+				if (validationResult === true) {
 					return true;
 				}
-				catch (error) {
-					validationErrors.push({
-						model: modelItem,
-						modelPath: '',
-						input: input,
-						inputPath: '',
-						error: error
-					});
+				else {
+					validationErrors.addError(validationResult);
 				}
 			}
 		}
 		else {
-			try {
-				this._validate(this.model, input);
+			const validationResult = this._validate(this.modelPathManager, inputPathManager);
+			if (validationResult === true) {
 				return true;
 			}
-			catch (error) {
-				validationErrors.push({
-					model: this.model,
-					modelPath: '',
-					input: input,
-					inputPath: '',
-					error: error
-				});
+			else {
+				validationErrors.addError(validationResult);
 			}
 		}
-		console.log('validationErrors:', validationErrors);
-		if (validationErrors.length <= 0) {
-			return true;
+
+		if (errorStyle === 'throw') {
+			console.log('validationErrors', validationErrors);
+			throw new Error(validationErrors.generateFormattedMessage());
 		}
-		else {
-			if (!suppressErrors) {
-				for (const validationError of validationErrors) {
-					console.error(validationError.error);
-				}
-			}
+		else if (errorStyle === 'boolean') {
 			return false;
 		}
+		else if (errorStyle === 'array') {
+			return validationErrors.errors;
+		}
+
 	}
 
 	/**
 	 * Validate an input using a single model.
-	 * @param {*} model - The model to use when validating the input.
-	 * @param {*} input - The input to validate.
+	 * @param {*} modelPathManager - The model path manager to use when validating the input.
+	 * @param {*} inputPathManager - The input path manager to validate.
 	 * @returns {boolean} The validation result.
 	 */
- 
-	_validate(model, input) {
-		console.log('_validate()');
-		console.log('model: ', model);
-		console.log('input: ', input);
-		if (model.required !== true) {
-			if (input === undefined || input === null) {
+
+	_validate(modelPathManager, inputPathManager) {
+		if (modelPathManager.value.required !== true) {
+			if (inputPathManager.value === undefined || inputPathManager.value === null) {
 				return true;
 			}
 		}
 		for (const validationMethod of this.constructor.validationMethods) {
-			if (model.hasOwnProperty(validationMethod.property)) {
-				validationMethod.method(model[validationMethod.property], input);
+			if (modelPathManager.value.hasOwnProperty(validationMethod.property)) {
+				const validationMethodModelPathManager = modelPathManager.clone();
+				validationMethodModelPathManager.addPathSegment(validationMethod.property);
+				try {
+					const validationResult = validationMethod.method(validationMethodModelPathManager, inputPathManager);
+					if (validationResult !== true) {
+						return validationResult;
+					}
+				}
+				catch (error) {
+					if (error instanceof Schema.ValidationError) {
+						if (!error.modelPathManager) {
+							error.modelPathManager = validationMethodModelPathManager;
+						}
+						if (!error.inputPathManager) {
+							error.inputPathManager = inputPathManager;
+						}
+						return error;
+					}
+					else {
+						throw error;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+}
+
+Schema.DataPathManager = class {
+	constructor(data, path = []) {
+		this.data = data;
+		this.path = path;
+	}
+	set path(path) {
+		if (Array.isArray(path)) {
+			this._path = path;
+		}
+		else {
+			throw new Error('Path must be an array');
+		}
+	}
+	get path() {
+		return this._path;
+	}
+	addPathSegment(pathSegment) {
+		this.path.push(pathSegment);
+	}
+	removePathSegment() {
+		this.path.splice(-1, 1);
+	}
+	get value() {
+		let value = this.data;
+		for (let path of this.path) {
+			value = value[path];
+		}
+		return value;
+	}
+	clone() {
+		return new Schema.DataPathManager(this.data, [...this.path]);
+	}
+};
+
+Schema.ValidationError = class extends Error {
+	constructor(...params) {
+		super(...params);
+	}
+	set modelPathManager(modelPathManager) {
+		if (!(modelPathManager instanceof Schema.DataPathManager)) {
+			modelPathManager = new Schema.DataPathManager(modelPathManager);
+		}
+		this._modelPathManager = modelPathManager;
+	}
+	get modelPathManager() {
+		return this._modelPathManager;
+	}
+	set inputPathManager(inputPathManager) {
+		if (!(inputPathManager instanceof Schema.DataPathManager)) {
+			inputPathManager = new Schema.DataPathManager(inputPathManager);
+		}
+		this._inputPathManager = inputPathManager;
+	}
+	get inputPathManager() {
+		return this._inputPathManager;
+	}
+};
+
+Schema.ValidationErrors = class {
+	constructor() {
+		this.errors = [];
+	}
+	addError(error) {
+		if (Array.isArray(error)) {
+			for (const singleError of error) {
+				this.addError(singleError);
+			}
+		}
+		else {
+			if (!(error instanceof Schema.ValidationError)) {
+				throw new Error(`Passed 'error' must be an instance of 'Schema.ValidationError'.`);
+			}
+			else {
+				this.errors.push(error);
 			}
 		}
 	}
-
+	generateFormattedMessage() {
+		let message = `Schema Errors:\n`;
+		for (const error of this.errors) {
+			const inputPath = error.inputPathManager.path.map((pathSegment) => {
+				return `['` + pathSegment + `']`;
+			});
+			message = message + `\nInput Path: ${inputPath}\nMessage: ${error.message}\n`;
+		}
+		return message;
+	}
 };

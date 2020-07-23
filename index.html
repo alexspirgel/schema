@@ -11,12 +11,17 @@
 	</head>
 	<body>
 		<script type="text/javascript">
+		console.dir(Schema);
 		var schema = new Schema({
 			required: true,
-			type: 'number'
+			type: 'array',
+			itemSchema: {
+				type: 'number'
+			}
 		});
 		console.dir(schema);
-		schema.validate(123);
+		const validationResult = schema.validate([1,2,'3']);
+		console.log('validationResult', validationResult);
 		</script>
 	</body>
 </html>

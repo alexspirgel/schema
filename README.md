@@ -1,256 +1,480 @@
 # Schema
 
-Schema is a JavaScript validator, meaning it will only detect if an input matches defined constraints, it will never edit any data.
+Schema is a JavaScript validator, meaning it will detect if an input matches defined constraints, it will not edit input data.
 
 ## Terminology
 
-**Input:** The values to be checked against the **schema**.
+**Model**: The data model used to **validate**.
 
-**Schema:** The data model used to **validate** the **input**.
+**Input**: The value to **validate**.
 
-**Validate:** The action of comparing the **input** to the **schema**.
+**Validate**: The action of comparing the **input** to the rules set in the **model**.
 
-## Options
+## Usage
+
+Create a schema using a model:
+
+```js
+const schema = new Schema({
+    type: 'number',
+    greaterThan: 5
+});
+```
+
+Use the schema to validate an input:
+
+```js
+schema.validate(6); // returns true
+```
+
+You can specify an error style as the second parameter of the validate method. The error style options are:
+* `'throw'` (default) will throw a formatted error on validate failure.
+* `'array'` will return an array of errors on validate failure.
+* `'boolean'` will return false on validate failure.
+
+More complex example:
+```js
+const schema = new Schema({
+    required: true,
+    type: 'object',
+    propertySchema: {
+        width: {
+            required: true,
+            type: 'number',
+            greaterThanOrEqualTo: 0
+        },
+        tags: {
+            type: 'array',
+            itemSchema: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'number'
+                }
+            ]
+        }
+    }
+});
+schema.validate(null); // fail
+schema.validate({}); // fail
+schema.validate({ // pass
+    width: 10
+});
+schema.validate({ // pass
+    width: 10,
+    tags: []
+});
+schema.validate({ // fail
+    width: 10,
+    tags: ['test', true]
+});
+schema.validate({ // pass
+    width: 10,
+    tags: ['test', 123]
+});
+```
+
+## Model Properties
 
 These parameters are used to define the schema rule set.
 
-### required
-
-Setting `required` to `true` forces a value to be passed. Defaults to `false`.
-```js
-var required_schema = {
-    'required': true
-};
-```
-
----
-
-### type
-
 <details>
 
-<summary>boolean</summary>
+<summary>required</summary>
+
+This property has no restrictions on what models it can belong to.
+
+Available values: any boolean.
+
+Setting `required` to `true` requires an input not to be `null` or `undefined`.
+
+Setting `required` to `false` or omitting it from the model (equivalent to `undefined`) will not require any input. If an input is `null` or `undefined` all other model properties will be skipped and the input is valid.
 
 ```js
-var boolean_schema = {
-    'type': 'boolean'
+model = {
+  required: true
 };
 ```
-
-Booleans have no unique options.
 
 </details>
-<br>
+
 <details>
 
-<summary>number</summary>
+<summary>type</summary>
+
+This property has no restrictions on what models it can belong to.
+
+Available values: `boolean`, `number`, `string`, `array`, `object`, `function`.
+
+An input must match the set type.
 
 ```js
-var number_schema = {
-    'type': 'number'
-    'number_min': 0,
-    'number_max': 25,
-    'number_multiple_of': 5
-};
-```
-**number_min**
-
-The input number must be greater than or equal to the set `number_min` number. Defaults to `undefined`.
-
-`'number_min': number`
-
-**number_max**
-
-The input number must be less than or equal to the set `number_max` number. Defaults to `undefined`.
-
-`'number_max': number`
-
-**number_multiple_of**
-
-The input number must be a multiple of the set `number_multiple_of` number. Defaults to `undefined`.
-
-`'number_multiple_of': number`
-
-Note: You cam limit the number to integers by setting `number_multiple_of` to `1`.
-
-</details>
-<br>
-<details>
-
-<summary>string</summary>
-
-```js
-var string_schema = {
-    'type': 'string',
-    'string_min_characters': 5,
-    'string_max_characters': 100
+model = {
+  type: 'boolean'
 };
 ```
 
-**string_min_characters**
-
-The input string character count must be longer than or equal to the set `string_min_characters`. Defaults to `undefined`.
-
-`'string_min_characters': number`
-
-**string_max_characters**
-
-The input string character count must be shorter than or equal to the set `string_max_characters`. Defaults to `undefined`.
-
-`'string_max_characters': number`
+Notes:
+* `NaN` is not a valid `number`.
+* `null` is not a valid `object`.
+* Arrays are not objects and objects are not arrays.
+  * `[]` is not a valid `object`.
+  * `{}` is not a valid `array`.
 
 </details>
-<br>
+
 <details>
 
-<summary>symbol</summary>
+<summary>exactValue</summary>
+
+This property is restricted to models with a `type` property of `boolean`, `number`, or `string`.
+
+Available values: any value or array of values.
+
+An input must match the value or one of the values in an array of values.
 
 ```js
-var symbol_schema = {
-    'type': 'symbol'
+model = {
+  type: 'string',
+  exactValue: 'hello world'
 };
 ```
 
-Symbols have no unique options.
-
-</details>
-<br>
-<details>
-
-<summary>function</summary>
-
 ```js
-var function_schema = {
-    'type': 'function'
+model = {
+  type: 'number',
+  exactValue: [5, 7, -12]
 };
 ```
 
-Functions have no unique options.
-
 </details>
-<br>
+
 <details>
 
-<summary>array</summary>
+<summary>greaterThan</summary>
+
+This property is restricted to models with a `type` property of `number`.
+
+Available values: any number.
+
+An input must be greater than the set number.
 
 ```js
-var array_schema = {
-    'type': 'array',
-    'array_min_length': 2,
-    'array_max_length': 6,
-    'array_items_unique': true,
-    'array_item_schema': {
-        'type': 'string'
+model = {
+  type: 'number',
+  greaterThan: 5
+};
+```
+
+</details>
+
+<details>
+
+<summary>greaterThanOrEqualTo</summary>
+
+This property is restricted to models with a `type` property of `number`.
+
+Available values: any number.
+
+An input must be greater than or equal to the set number.
+
+```js
+model = {
+  type: 'number',
+  greaterThanOrEqualTo: 5
+};
+```
+
+</details>
+
+<details>
+
+<summary>lessThan</summary>
+
+This property is restricted to models with a `type` property of `number`.
+
+Available values: any number.
+
+An input must be less than the set number.
+
+```js
+model = {
+  type: 'number',
+  lessThan: 5
+};
+```
+
+</details>
+
+<details>
+
+<summary>lessThanOrEqualTo</summary>
+
+This property is restricted to models with a `type` property of `number`.
+
+Available values: any number.
+
+An input must be less than or equal to the set number.
+
+```js
+model = {
+  type: 'number',
+  lessThanOrEqualTo: 5
+};
+```
+
+</details>
+
+<details>
+
+<summary>divisibleBy</summary>
+
+This property is restricted to models with a `type` property of `number`.
+
+Available values: any number or array of numbers.
+
+An input must be divisible by the set number or one of the numbers in the array of numbers.
+
+```js
+model = {
+  type: 'number',
+  divisibleBy: 2 // even numbers
+};
+```
+
+```js
+model = {
+  type: 'number',
+  divisibleBy: [5, 8]
+};
+```
+
+</details>
+
+<details>
+
+<summary>notDivisibleBy</summary>
+
+This property is restricted to models with a `type` property of `number`.
+
+Available values: any number or array of numbers.
+
+An input must not be divisible by the set number or any of the numbers in the array of numbers.
+
+```js
+model = {
+  type: 'number',
+  notDivisibleBy: 2 // odd numbers
+};
+```
+
+```js
+model = {
+  type: 'number',
+  notDivisibleBy: [5, 8]
+};
+```
+
+</details>
+
+<details>
+
+<summary>minimumCharacters</summary>
+
+This property is restricted to models with a `type` property of `string`.
+
+Available values: any number.
+
+An input must have a character count greater than or equal to the set number.
+
+```js
+model = {
+  type: 'string',
+  minimumCharacters: 5
+};
+```
+
+</details>
+
+<details>
+
+<summary>maximumCharacters</summary>
+
+This property is restricted to models with a `type` property of `string`.
+
+Available values: any number.
+
+An input must have a character count less than or equal to the set number.
+
+```js
+model = {
+  type: 'string',
+  maximumCharacters: 5
+};
+```
+
+</details>
+
+<details>
+
+<summary>minimumLength</summary>
+
+This property is restricted to models with a `type` property of `array`.
+
+Available values: any number.
+
+An input must have length greater than or equal to the set number.
+
+```js
+model = {
+  type: 'array',
+  minimumLength: 5
+};
+```
+
+</details>
+
+<details>
+
+<summary>maximumLength</summary>
+
+This property is restricted to models with a `type` property of `array`.
+
+Available values: any number.
+
+An input must have length less than or equal to the set number.
+
+```js
+model = {
+  type: 'array',
+  maximumLength: 5
+};
+```
+
+</details>
+
+<details>
+
+<summary>itemSchema</summary>
+
+This property is restricted to models with a `type` property of `array`.
+
+Available values: any model.
+
+Each item of the input array must validate using the `itemSchema`.
+
+```js
+model = {
+  type: 'array',
+  itemSchema: {
+    type: 'number'
+  }
+};
+```
+
+</details>
+
+<details>
+
+<summary>instanceOf</summary>
+
+This property is restricted to models with a `type` property of `object`.
+
+Available values: any object or array of objects.
+
+An input must be an instance of the object or one of the objects in the array of objects.
+
+```js
+model = {
+  type: 'object',
+  instanceOf: Element
+};
+```
+
+```js
+model = {
+  type: 'object',
+  instanceOf: [Element, Error]
+};
+```
+
+</details>
+
+<details>
+
+<summary>propertySchema</summary>
+
+This property is restricted to models with a `type` property of `object`.
+
+Available values: an object containing property and model pairs.
+
+Each property of the input object must validate using the corresponding property model defined in the model.
+
+```js
+model = {
+  type: 'object',
+  propertySchema: {
+    property1: {
+      type: 'number'
+    },
+    property2: {
+      type: 'string'
     }
+  }
 };
 ```
 
-**array_min_length**
-
-The input array length must be longer than or equal to the set `array_min_length`. Defaults to `undefined`.
-
-`'array_min_length': number`
-
-**array_max_length**
-
-The input array length must be shorter than or equal to the set `array_max_length`. Defaults to `undefined`.
-
-`'array_max_length': number`
-
-**array_items_unique**
-
-If set to `true`, input arrays with 2 or more items with the same value will fail validation. Defaults to `false`.
-
-`'array_items_unique': boolean`
-
-**array_item_schema**
-
-Each input array item must validate using the set `array_item_schema`. This value can also be defined as an array of schema. Defaults to `undefined`.
-
-`'array_item_schema': object|array`
-
 </details>
-<br>
+
 <details>
 
-<summary>object</summary>
+<summary>custom</summary>
+
+This property has no restrictions on what models it can belong to.
+
+Available values: any function that returns true on successfull validation or throws a `Schema.ValidationError` on failure.
+
+An input must be validate successfully using the custom validation function.
 
 ```js
-var object_schema = {
-    'type': 'object',
-    'object_allow_unexpected': true,
-    'object_unique_values': true,
-    'object_property_schema': {
-        'property_abc': {
-            'required': true,
-            'type': 'number'
-        }
-        'property_xyz': {
-            'type': 'string'
-        }
+model = {
+  custom: (inputPathManager) => {
+    if (inputPathManager.value.includes('hello')) {
+      return true;
     }
+    else {
+      throw new Schema.ValidationError(`Custom validation failed. The input must contain the string 'hello'.`);
+    }
+  }
 };
 ```
 
-**object_allow_unexpected**
-
-If set to `false`, input objects with properties not listed within `object_properties` will fail validation. Defaults to `true`.
-
-`'object_allow_unexpected': boolean`
-
-**object_unique_values**
-
-If set to `true`, input objects with a property value equal to another property value on the same object will fail validation. Defaults to `false`.
-
-`'object_unique_values': boolean`
-
-**object_property_schema**
-
-Each property within the `object_property_schema` option represents a new full schema that can include generic schema options.
-
-`'object_property_schema': object`
+Notes:
+* Do not edit the `inputPathManager.data`. If the data is not primitive this will change the input value for the rest of the validation. This will be fixed in a future update.
 
 </details>
-<br>
 
-Note: If no `type` is set, any type variable will be considered valid.
+## Multiple Models
 
-#### Optional Schema
+Anywhere you could use a model, you can instead use an array of models. If an input validates successfully using any of the models in the array, the validation is successfull.
 
-When a value has more than one valid syntax, multiple schema can be defined. Anywhere a single schema object can be defined, so can an array of schema objects.
-
-Here is an example of optional schema:
+Here is an example of multiple models:
 
 ```js
-var multiple_type_schema = {
-    'type_schema': [
-        {
-            'type': 'number',
-            'number_multiple_of': 5
-        },
-        {
-            'type': 'array',
-            'number_multiple_of': {
-                'type': 'number',
-                'array_item_type_schema': 5
-            }
-        }
-    ]
-};
+model = [
+  {
+    type: 'number'
+  },
+  {
+    type: 'string'
+  }
+];
 ```
 
-This schema configuration allows for the input to be either a single value or an array of values.
-
-## Notes:
-
-* When implementing schema into your script, it's a good idea to include the option to turn off schema validation. This is helpful for optimizing performance in production environments when the input has already been proven valid.
+This model allows for the input to be either a number or a string.
 
 ## Known Issues:
 
-* None.
-
-## Changelog:
-
-### Version 0.0.1
-
-* Script creation.
+* There is no validation of the model itself. The model should be validated upon new schema creation.
+* Editing the `inputPathManager.data` within a custom validation function will edit it for further validation checks. The user should not be able to edit the input in a custom validation function.

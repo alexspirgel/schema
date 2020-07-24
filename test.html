@@ -1152,6 +1152,146 @@
 					},
 				]
 			},
+			{
+				validator: Schema.validateMinimumLength,
+				value: 3,
+				tests: [
+					{
+						input: [],
+						expected: false
+					},
+					{
+						input: [1],
+						expected: false
+					},
+					{
+						input: [1, 2],
+						expected: false
+					},
+					{
+						input: [1, 2, 3],
+						expected: true
+					},
+					{
+						input: [1, 2, 3, 4],
+						expected: true
+					},
+					{
+						input: [1, 2, 3, 4, 5],
+						expected: true
+					},
+				]
+			},
+			{
+				validator: Schema.validateMaximumLength,
+				value: 3,
+				tests: [
+					{
+						input: [],
+						expected: true
+					},
+					{
+						input: [1],
+						expected: true
+					},
+					{
+						input: [1, 2],
+						expected: true
+					},
+					{
+						input: [1, 2, 3],
+						expected: true
+					},
+					{
+						input: [1, 2, 3, 4],
+						expected: false
+					},
+					{
+						input: [1, 2, 3, 4, 5],
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateInstanceOf,
+				value: Schema,
+				tests: [
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: new Schema({}),
+						expected: true
+					},
+					{
+						input: document.createElement("div"),
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateInstanceOf,
+				value: Element,
+				tests: [
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: new Schema({}),
+						expected: false
+					},
+					{
+						input: document.createElement("div"),
+						expected: true
+					},
+				]
+			},
+			{
+				validator: Schema.validateInstanceOf,
+				value: Error,
+				tests: [
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: new Schema({}),
+						expected: false
+					},
+					{
+						input: document.createElement("div"),
+						expected: false
+					},
+					{
+						input: new Schema.ValidationError(''),
+						expected: true
+					},
+				]
+			},
+			{
+				validator: Schema.validateInstanceOf,
+				value: [Element, Error],
+				tests: [
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: new Schema({}),
+						expected: false
+					},
+					{
+						input: document.createElement("div"),
+						expected: true
+					},
+					{
+						input: new Schema.ValidationError(''),
+						expected: true
+					},
+				]
+			},
 		];
 	
 		for (const testCase of testCases) {
@@ -1180,7 +1320,7 @@
 			}
 		}
 
-		console.log('Completed tests.');
+		console.log('Completed tests. Any errors will be shown above as warnings.');
 	</script>
 </body>
 </html>

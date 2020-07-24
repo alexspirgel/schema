@@ -8,8 +8,8 @@ even though it is an object, null should NOT satisfy {type: 'object'}
 schema = {
 	required: true, // boolean
 	type: 'number', // string must be one of: boolean, number, string, array, object, function
-	custom: (value) => { // function should return true or throw an error
-		if (value === 123) {
+	custom: (inputPathManager) => { // function should return true or throw an error
+		if (inputPathManager.value === 123) {
 			return true;
 		}
 		else {
@@ -49,15 +49,13 @@ schema = {
 	type: 'array',
 	minimumLength: 1, // number
 	maximumLength: 5, // number
-	uniqueItems: false, // boolean
 	itemSchema: {} // schema or array of schemas
 }
 
 // object
 schema = {
 	type: 'object',
-	instanceOf: Element, // object
-	allowUnvalidatedProperties: true, // boolean
+	instanceOf: Element, // object or array of objects
 	propertySchema: {
 		property1: {}, // schema or array of schemas
 		property2: {} // schema or array of schemas

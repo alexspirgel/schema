@@ -1,88 +1,81 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Schema</title>
-	<script type="text/javascript" src="schema.js"></script>
-</head>
-<body>
-	<script type="text/javascript">
-		const log_result = (result) => {
-			if(result) {
-				console.log('%ctrue', 'background-color:rgba(0,255,0,0.5);');
+	<head>
+		<title>Schema</title>
+		<script type="text/javascript" src="index.js"></script>
+		<style>
+			body {
+				background: gray;
 			}
-			else {
-				console.log('%cfalse', 'background-color:rgba(255,0,0,0.5);');
-			}
-		};
-		const schema_test = (schema_object) => {
-			console.log('value: '+true);
-			log_result(schema_object.validate(true));
-
-			console.log('value: '+false);
-			log_result(schema_object.validate(false));
-
-			console.log('value: '+'abc');
-			log_result(schema_object.validate('abc'));
-
-			console.log('value: (empty string)');
-			log_result(schema_object.validate(''));
-
-			console.log('value: (single space string)');
-			log_result(schema_object.validate(' '));
-
-			console.log('value: '+1);
-			log_result(schema_object.validate(1));
-
-			console.log('value: '+0);
-			log_result(schema_object.validate(0));
-
-			console.log('value: '+-5.238756);
-			log_result(schema_object.validate(-5.238756));
-
-			console.log('value: '+12345);
-			log_result(schema_object.validate(12345));
-
-			console.log('value: '+NaN);
-			log_result(schema_object.validate(NaN));
-
-			console.log('value: []');
-			log_result(schema_object.validate([]));
-
-			console.log('value: [1,2,3,2]');
-			log_result(schema_object.validate([1,2,3,2]));
-
-			console.log('value: {}');
-			log_result(schema_object.validate({}));
-
-			console.log('value: {"a":1,"b":true,"c":[]}');
-			log_result(schema_object.validate({"a":1,"b":true,"c":[]}));
-
-			console.log('value: (nothing)');
-			log_result(schema_object.validate());
-
-			console.log('value: undefined');
-			log_result(schema_object.validate(undefined));
-
-			console.log('value: '+null);
-			log_result(schema_object.validate(null));
-		};
-
-		console.log('--------------------------------------------------');
-		const schema_example = new Schema({
-			"type": "object",
-			"object_property_schema":{
-				"a": {
-					"required": true
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript">
+		console.dir(Schema);
+		var schema = new Schema([
+			{
+				required: true,
+				type: 'object',
+				propertySchema: {
+					width: {
+						type: 'number',
+					},
+					height: {
+						type: 'number'
+					},
+					flag: {
+						required: true,
+						type: 'boolean'
+					},
+					list: {
+						type: 'array',
+						minimumLength: 3,
+						itemSchema: [
+							{
+								required: true,
+								type: 'string',
+								minimumCharacters: 10
+							},
+							{
+								required: true,
+								type: 'string',
+								exactValue: 'special'
+							}
+						]
+					}
 				},
-				"c": {
-					"required": true
+				custom: (inputPathManager) => {
+					inputPathManager.addPathSegment('width');
+					const width = inputPathManager.value;
+					inputPathManager.removePathSegment();
+					inputPathManager.addPathSegment('height');
+					const height = inputPathManager.value;
+					if ((width === null || width === undefined) && (height === null || height === undefined)) {
+						throw new Schema.ValidationError(`Property 'custom' validation failed. Width and height cannot both be null or undefined.`);
+					}
+					else {
+						return true;
+					}
 				}
+			},
+			{
+				required: true,
+				type: 'number'
 			}
-		});
-		console.log('schema_example:');
-		console.log(schema_example);
-		schema_test(schema_example);
-	</script>
+		]);
 
-</body>
+		console.dir(schema);
+
+		var validationResult = schema.validate({
+			width: 10,
+			// height: 10,
+			flag: false,
+			list: ['test string1', 'test string2', 'special']
+		});
+		console.log('validationResult', validationResult);
+
+		validationResult = schema.validate(123);
+		console.log('validationResult', validationResult);
+		</script>
+	</body>
 </html>

@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Schema</title>
+	<script type="text/javascript" src="index.js"></script>
+	<style>
+		body {
+			background: gray;
+		}
+	</style>
+</head>
+<body>
+	<script type="text/javascript">
+		console.log('Running tests...');
+
+		const testCases = [
+			{
+				validator: Schema.validateRequired,
+				value: true,
+				tests: [
+					{
+						input: true,
+						expected: true
+					},
+					{
+						input: 123,
+						expected: true
+					},
+					{
+						input: 'abc',
+						expected: true
+					},
+					{
+						input: () => {},
+						expected: true
+					},
+					{
+						input: [],
+						expected: true
+					},
+					{
+						input: {},
+						expected: true
+					},
+					{
+						input: NaN,
+						expected: true
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+			{
+				validator: Schema.validateRequired,
+				value: false,
+				tests: [
+					{
+						input: true,
+						expected: true
+					},
+					{
+						input: 123,
+						expected: true
+					},
+					{
+						input: 'abc',
+						expected: true
+					},
+					{
+						input: () => {},
+						expected: true
+					},
+					{
+						input: [],
+						expected: true
+					},
+					{
+						input: {},
+						expected: true
+					},
+					{
+						input: NaN,
+						expected: true
+					},
+					{
+						input: null,
+						expected: true
+					},
+					{
+						input: undefined,
+						expected: true
+					}
+				]
+			},
+			{
+				validator: Schema.validateType,
+				value: 'boolean',
+				tests: [
+					{
+						input: true,
+						expected: true
+					},
+					{
+						input: 123,
+						expected: false
+					},
+					{
+						input: 'abc',
+						expected: false
+					},
+					{
+						input: () => {},
+						expected: false
+					},
+					{
+						input: [],
+						expected: false
+					},
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+			{
+				validator: Schema.validateType,
+				value: 'number',
+				tests: [
+					{
+						input: true,
+						expected: false
+					},
+					{
+						input: 123,
+						expected: true
+					},
+					{
+						input: 'abc',
+						expected: false
+					},
+					{
+						input: () => {},
+						expected: false
+					},
+					{
+						input: [],
+						expected: false
+					},
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+			{
+				validator: Schema.validateType,
+				value: 'string',
+				tests: [
+					{
+						input: true,
+						expected: false
+					},
+					{
+						input: 123,
+						expected: false
+					},
+					{
+						input: 'abc',
+						expected: true
+					},
+					{
+						input: () => {},
+						expected: false
+					},
+					{
+						input: [],
+						expected: false
+					},
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+			{
+				validator: Schema.validateType,
+				value: 'array',
+				tests: [
+					{
+						input: true,
+						expected: false
+					},
+					{
+						input: 123,
+						expected: false
+					},
+					{
+						input: 'abc',
+						expected: false
+					},
+					{
+						input: () => {},
+						expected: false
+					},
+					{
+						input: [],
+						expected: true
+					},
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+			{
+				validator: Schema.validateType,
+				value: 'object',
+				tests: [
+					{
+						input: true,
+						expected: false
+					},
+					{
+						input: 123,
+						expected: false
+					},
+					{
+						input: 'abc',
+						expected: false
+					},
+					{
+						input: () => {},
+						expected: false
+					},
+					{
+						input: [],
+						expected: false
+					},
+					{
+						input: {},
+						expected: true
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+			{
+				validator: Schema.validateType,
+				value: 'function',
+				tests: [
+					{
+						input: true,
+						expected: false
+					},
+					{
+						input: 123,
+						expected: false
+					},
+					{
+						input: 'abc',
+						expected: false
+					},
+					{
+						input: () => {},
+						expected: true
+					},
+					{
+						input: [],
+						expected: false
+					},
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+			{
+				validator: Schema.validateExactValue,
+				value: true,
+				tests: [
+					{
+						input: true,
+						expected: true
+					},
+					{
+						input: 123,
+						expected: false
+					},
+					{
+						input: 'abc',
+						expected: false
+					},
+					{
+						input: () => {},
+						expected: false
+					},
+					{
+						input: [],
+						expected: false
+					},
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+			{
+				validator: Schema.validateExactValue,
+				value: 123,
+				tests: [
+					{
+						input: true,
+						expected: false
+					},
+					{
+						input: 123,
+						expected: true
+					},
+					{
+						input: 'abc',
+						expected: false
+					},
+					{
+						input: () => {},
+						expected: false
+					},
+					{
+						input: [],
+						expected: false
+					},
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+			{
+				validator: Schema.validateExactValue,
+				value: [true, 123],
+				tests: [
+					{
+						input: true,
+						expected: true
+					},
+					{
+						input: 123,
+						expected: true
+					},
+					{
+						input: 'abc',
+						expected: false
+					},
+					{
+						input: () => {},
+						expected: false
+					},
+					{
+						input: [],
+						expected: false
+					},
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+					{
+						input: null,
+						expected: false
+					},
+					{
+						input: undefined,
+						expected: false
+					}
+				]
+			},
+			{
+				validator: Schema.validateGreaterThan,
+				value: 10,
+				tests: [
+					{
+						input: -50,
+						expected: false
+					},
+					{
+						input: -10,
+						expected: false
+					},
+					{
+						input: -1,
+						expected: false
+					},
+					{
+						input: -0,
+						expected: false
+					},
+					{
+						input: 0,
+						expected: false
+					},
+					{
+						input: 1,
+						expected: false
+					},
+					{
+						input: 10,
+						expected: false
+					},
+					{
+						input: 50,
+						expected: true
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateGreaterThan,
+				value: -10,
+				tests: [
+					{
+						input: -50,
+						expected: false
+					},
+					{
+						input: -10,
+						expected: false
+					},
+					{
+						input: -1,
+						expected: true
+					},
+					{
+						input: -0,
+						expected: true
+					},
+					{
+						input: 0,
+						expected: true
+					},
+					{
+						input: 1,
+						expected: true
+					},
+					{
+						input: 10,
+						expected: true
+					},
+					{
+						input: 50,
+						expected: true
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateGreaterThanOrEqualTo,
+				value: 10,
+				tests: [
+					{
+						input: -50,
+						expected: false
+					},
+					{
+						input: -10,
+						expected: false
+					},
+					{
+						input: -1,
+						expected: false
+					},
+					{
+						input: -0,
+						expected: false
+					},
+					{
+						input: 0,
+						expected: false
+					},
+					{
+						input: 1,
+						expected: false
+					},
+					{
+						input: 10,
+						expected: true
+					},
+					{
+						input: 50,
+						expected: true
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateGreaterThanOrEqualTo,
+				value: -10,
+				tests: [
+					{
+						input: -50,
+						expected: false
+					},
+					{
+						input: -10,
+						expected: true
+					},
+					{
+						input: -1,
+						expected: true
+					},
+					{
+						input: -0,
+						expected: true
+					},
+					{
+						input: 0,
+						expected: true
+					},
+					{
+						input: 1,
+						expected: true
+					},
+					{
+						input: 10,
+						expected: true
+					},
+					{
+						input: 50,
+						expected: true
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateLessThan,
+				value: 10,
+				tests: [
+					{
+						input: -50,
+						expected: true
+					},
+					{
+						input: -10,
+						expected: true
+					},
+					{
+						input: -1,
+						expected: true
+					},
+					{
+						input: -0,
+						expected: true
+					},
+					{
+						input: 0,
+						expected: true
+					},
+					{
+						input: 1,
+						expected: true
+					},
+					{
+						input: 10,
+						expected: false
+					},
+					{
+						input: 50,
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateLessThan,
+				value: -10,
+				tests: [
+					{
+						input: -50,
+						expected: true
+					},
+					{
+						input: -10,
+						expected: false
+					},
+					{
+						input: -1,
+						expected: false
+					},
+					{
+						input: -0,
+						expected: false
+					},
+					{
+						input: 0,
+						expected: false
+					},
+					{
+						input: 1,
+						expected: false
+					},
+					{
+						input: 10,
+						expected: false
+					},
+					{
+						input: 50,
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateLessThanOrEqualTo,
+				value: 10,
+				tests: [
+					{
+						input: -50,
+						expected: true
+					},
+					{
+						input: -10,
+						expected: true
+					},
+					{
+						input: -1,
+						expected: true
+					},
+					{
+						input: -0,
+						expected: true
+					},
+					{
+						input: 0,
+						expected: true
+					},
+					{
+						input: 1,
+						expected: true
+					},
+					{
+						input: 10,
+						expected: true
+					},
+					{
+						input: 50,
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateLessThanOrEqualTo,
+				value: -10,
+				tests: [
+					{
+						input: -50,
+						expected: true
+					},
+					{
+						input: -10,
+						expected: true
+					},
+					{
+						input: -1,
+						expected: false
+					},
+					{
+						input: -0,
+						expected: false
+					},
+					{
+						input: 0,
+						expected: false
+					},
+					{
+						input: 1,
+						expected: false
+					},
+					{
+						input: 10,
+						expected: false
+					},
+					{
+						input: 50,
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateDivisibleBy,
+				value: 5,
+				tests: [
+					{
+						input: -21,
+						expected: false
+					},
+					{
+						input: -20,
+						expected: true
+					},
+					{
+						input: -19,
+						expected: false
+					},
+					{
+						input: -6,
+						expected: false
+					},
+					{
+						input: -5,
+						expected: true
+					},
+					{
+						input: -4,
+						expected: false
+					},
+					{
+						input: -1,
+						expected: false
+					},
+					{
+						input: -0,
+						expected: true
+					},
+					{
+						input: 0,
+						expected: true
+					},
+					{
+						input: 1,
+						expected: false
+					},
+					{
+						input: 4,
+						expected: false
+					},
+					{
+						input: 5,
+						expected: true
+					},
+					{
+						input: 6,
+						expected: false
+					},
+					{
+						input: 19,
+						expected: false
+					},
+					{
+						input: 20,
+						expected: true
+					},
+					{
+						input: 21,
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateDivisibleBy,
+				value: [3, 5],
+				tests: [
+					{
+						input: -21,
+						expected: true
+					},
+					{
+						input: -20,
+						expected: true
+					},
+					{
+						input: -19,
+						expected: false
+					},
+					{
+						input: -6,
+						expected: true
+					},
+					{
+						input: -5,
+						expected: true
+					},
+					{
+						input: -4,
+						expected: false
+					},
+					{
+						input: -1,
+						expected: false
+					},
+					{
+						input: -0,
+						expected: true
+					},
+					{
+						input: 0,
+						expected: true
+					},
+					{
+						input: 1,
+						expected: false
+					},
+					{
+						input: 4,
+						expected: false
+					},
+					{
+						input: 5,
+						expected: true
+					},
+					{
+						input: 6,
+						expected: true
+					},
+					{
+						input: 19,
+						expected: false
+					},
+					{
+						input: 20,
+						expected: true
+					},
+					{
+						input: 21,
+						expected: true
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateNotDivisibleBy,
+				value: 5,
+				tests: [
+					{
+						input: -21,
+						expected: true
+					},
+					{
+						input: -20,
+						expected: false
+					},
+					{
+						input: -19,
+						expected: true
+					},
+					{
+						input: -6,
+						expected: true
+					},
+					{
+						input: -5,
+						expected: false
+					},
+					{
+						input: -4,
+						expected: true
+					},
+					{
+						input: -1,
+						expected: true
+					},
+					{
+						input: -0,
+						expected: false
+					},
+					{
+						input: 0,
+						expected: false
+					},
+					{
+						input: 1,
+						expected: true
+					},
+					{
+						input: 4,
+						expected: true
+					},
+					{
+						input: 5,
+						expected: false
+					},
+					{
+						input: 6,
+						expected: true
+					},
+					{
+						input: 19,
+						expected: true
+					},
+					{
+						input: 20,
+						expected: false
+					},
+					{
+						input: 21,
+						expected: true
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateNotDivisibleBy,
+				value: [3, 5],
+				tests: [
+					{
+						input: -21,
+						expected: false
+					},
+					{
+						input: -20,
+						expected: false
+					},
+					{
+						input: -19,
+						expected: true
+					},
+					{
+						input: -6,
+						expected: false
+					},
+					{
+						input: -5,
+						expected: false
+					},
+					{
+						input: -4,
+						expected: true
+					},
+					{
+						input: -1,
+						expected: true
+					},
+					{
+						input: -0,
+						expected: false
+					},
+					{
+						input: 0,
+						expected: false
+					},
+					{
+						input: 1,
+						expected: true
+					},
+					{
+						input: 4,
+						expected: true
+					},
+					{
+						input: 5,
+						expected: false
+					},
+					{
+						input: 6,
+						expected: false
+					},
+					{
+						input: 19,
+						expected: true
+					},
+					{
+						input: 20,
+						expected: false
+					},
+					{
+						input: 21,
+						expected: false
+					},
+					{
+						input: NaN,
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateMinimumCharacters,
+				value: 11,
+				tests: [
+					{
+						input: 'Hello',
+						expected: false
+					},
+					{
+						input: 'Hello World',
+						expected: true
+					},
+					{
+						input: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam tempor elit ornare varius gravida.',
+						expected: true
+					},
+					{
+						input: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam tempor elit ornare varius gravida. Sed id neque pharetra, lacinia augue vel, laoreet massa. Pellentesque convallis nisl ac laoreet tempus. Nam maximus nisi sed mauris tristique ullamcorper. Proin vitae arcu sapien. Fusce arcu velit, gravida vitae nulla at, varius posuere diam. Ut nisi quam, varius id augue sed, accumsan congue enim. Etiam risus velit, tincidunt vel dui a, sodales consectetur tortor. Cras eu quam sed magna lobortis luctus in sit amet mi.',
+						expected: true
+					},
+				]
+			},
+			{
+				validator: Schema.validateMaximumCharacters,
+				value: 11,
+				tests: [
+					{
+						input: 'Hello',
+						expected: true
+					},
+					{
+						input: 'Hello World',
+						expected: true
+					},
+					{
+						input: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam tempor elit ornare varius gravida.',
+						expected: false
+					},
+					{
+						input: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam tempor elit ornare varius gravida. Sed id neque pharetra, lacinia augue vel, laoreet massa. Pellentesque convallis nisl ac laoreet tempus. Nam maximus nisi sed mauris tristique ullamcorper. Proin vitae arcu sapien. Fusce arcu velit, gravida vitae nulla at, varius posuere diam. Ut nisi quam, varius id augue sed, accumsan congue enim. Etiam risus velit, tincidunt vel dui a, sodales consectetur tortor. Cras eu quam sed magna lobortis luctus in sit amet mi.',
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateMinimumLength,
+				value: 3,
+				tests: [
+					{
+						input: [],
+						expected: false
+					},
+					{
+						input: [1],
+						expected: false
+					},
+					{
+						input: [1, 2],
+						expected: false
+					},
+					{
+						input: [1, 2, 3],
+						expected: true
+					},
+					{
+						input: [1, 2, 3, 4],
+						expected: true
+					},
+					{
+						input: [1, 2, 3, 4, 5],
+						expected: true
+					},
+				]
+			},
+			{
+				validator: Schema.validateMaximumLength,
+				value: 3,
+				tests: [
+					{
+						input: [],
+						expected: true
+					},
+					{
+						input: [1],
+						expected: true
+					},
+					{
+						input: [1, 2],
+						expected: true
+					},
+					{
+						input: [1, 2, 3],
+						expected: true
+					},
+					{
+						input: [1, 2, 3, 4],
+						expected: false
+					},
+					{
+						input: [1, 2, 3, 4, 5],
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateInstanceOf,
+				value: Schema,
+				tests: [
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: new Schema({}),
+						expected: true
+					},
+					{
+						input: document.createElement("div"),
+						expected: false
+					},
+				]
+			},
+			{
+				validator: Schema.validateInstanceOf,
+				value: Element,
+				tests: [
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: new Schema({}),
+						expected: false
+					},
+					{
+						input: document.createElement("div"),
+						expected: true
+					},
+				]
+			},
+			{
+				validator: Schema.validateInstanceOf,
+				value: Error,
+				tests: [
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: new Schema({}),
+						expected: false
+					},
+					{
+						input: document.createElement("div"),
+						expected: false
+					},
+					{
+						input: new Schema.ValidationError(''),
+						expected: true
+					},
+				]
+			},
+			{
+				validator: Schema.validateInstanceOf,
+				value: [Element, Error],
+				tests: [
+					{
+						input: {},
+						expected: false
+					},
+					{
+						input: new Schema({}),
+						expected: false
+					},
+					{
+						input: document.createElement("div"),
+						expected: true
+					},
+					{
+						input: new Schema.ValidationError(''),
+						expected: true
+					},
+				]
+			},
+		];
+	
+		for (const testCase of testCases) {
+			for (const test of testCase.tests) {
+				try {
+					const validationResult = testCase.validator(new Schema.DataPathManager(testCase.value), new Schema.DataPathManager(test.input));
+					if (validationResult !== test.expected) {
+						console.warn('Fail', {
+							validator: testCase.validator,
+							value: testCase.value,
+							input: test.input,
+							expected: test.expected
+						});
+					}
+				}
+				catch {
+					if (test.expected !== false) {
+						console.warn('Fail', {
+							validator: testCase.validator,
+							value: testCase.value,
+							input: test.input,
+							expected: test.expected
+						});
+					}
+				}
+			}
+		}
+
+		console.log('Completed tests. Any errors will be shown above as warnings.');
+	</script>
+</body>
+</html>

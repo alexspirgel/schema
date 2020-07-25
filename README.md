@@ -473,8 +473,3 @@ model = [
 ```
 
 This model allows for the input to be either a number or a string.
-
-## Known Issues:
-
-* There is no validation of the model itself. The model should be validated upon new schema creation.
-* Editing the `inputPathManager.data` within a custom validation function will edit it for further validation checks. The user should not be able to edit the input in a custom validation function.

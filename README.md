@@ -1,6 +1,6 @@
 # Schema
 
-Schema is a JavaScript validator, meaning it will detect if an input matches defined constraints, it will not edit input data. This was originally developed for validating complex options objects as they passed into other scripts/packages, but it can be used effectively outside of that specific example.
+Schema is a JavaScript validator, meaning it will detect if an input matches defined constraints, it will not edit input data. This was originally developed for validating complex options objects as they are passed into other scripts, but it can be used effectively outside of that specific example.
 
 ## Installation
 

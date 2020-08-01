@@ -80,6 +80,9 @@ schema.validate({}); // fail
 schema.validate({ // pass
     width: 10
 });
+schema.validate({ // fail
+    width: -5
+});
 schema.validate({ // pass
     width: 10,
     tags: []

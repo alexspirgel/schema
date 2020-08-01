@@ -1,14 +1,26 @@
 # Schema
 
-Schema is a JavaScript validator, meaning it will detect if an input matches defined constraints, it will not edit input data.
+Schema is a JavaScript validator, meaning it will detect if an input matches defined constraints, it will not edit input data. This was originally developed for validating complex options objects as they passed into other scripts/packages, but it can be used effectively outside of that specific example.
 
-## Terminology
+## Installation
 
-**Model**: The data model used to **validate**.
+### Using NPM:
 
-**Input**: The value to **validate**.
+```js
+npm install @alexspirgel/schema
+```
 
-**Validate**: The action of comparing the **input** to the rules set in the **model**.
+```js
+const Schema = require('@alexspirgel/schema');
+```
+
+### Using a script tag:
+
+Download the normal or minified script from the `/dist` folder.
+
+```html
+<script src="path/to/schema.js"></script>
+```
 
 ## Usage
 
@@ -28,9 +40,16 @@ schema.validate(6); // returns true
 ```
 
 You can specify an error style as the second parameter of the validate method. The error style options are:
-* `'throw'` (default) will throw a formatted error on validate failure.
-* `'array'` will return an array of errors on validate failure.
+* `'throw'` (default) will throw a formatted error on validate failure. The message will include multiple errors when applicable.
+* `'array'` will return an array of errors on validate failure. Useful for sorting through multiple errors programatically.
 * `'boolean'` will return false on validate failure.
+
+```js
+schema.validate(4); // throws an error
+schema.validate(4, 'throw'); // throws an error
+schema.validate(4, 'array'); // returns an array
+schema.validate(4, 'boolean'); // returns false
+```
 
 More complex example:
 ```js
@@ -47,10 +66,10 @@ const schema = new Schema({
             type: 'array',
             itemSchema: [
                 {
-                    type: 'string'
+                    type: 'number'
                 },
                 {
-                    type: 'number'
+                    type: 'string'
                 }
             ]
         }
@@ -71,7 +90,7 @@ schema.validate({ // fail
 });
 schema.validate({ // pass
     width: 10,
-    tags: ['test', 123]
+    tags: ['test', 123, 'hello']
 });
 ```
 

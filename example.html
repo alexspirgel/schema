@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Schema</title>
+		<script type="text/javascript" src="dist/schema.js"></script>
+	</head>
+	<body>
+		Check the console for output.
+		<script type="text/javascript">
+		const schema = new Schema({
+					required: true,
+					type: 'object',
+					propertySchema: {
+							width: {
+									required: true,
+									type: 'number',
+									greaterThanOrEqualTo: 0
+							},
+							tags: {
+									type: 'array',
+									itemSchema: [
+											{
+													type: 'number'
+											},
+											{
+													type: 'string'
+											}
+									]
+							}
+					}
+			});
+			
+			console.log('Model:', schema.modelPathManager.value);
+			
+			let input;
+
+			// will fail
+			console.log('Validate:', input);
+			try {
+				schema.validate(input);
+				console.log('Pass');
+			}
+			catch(error) {
+				console.error(error);
+			}
+
+			// will fail
+			input = {};
+			console.log('Validate:', input);
+			try {
+				schema.validate(input);
+				console.log('Pass');
+			}
+			catch(error) {
+				console.error(error);
+			}
+
+			// will pass
+			input = {
+				width: 10
+			};
+			console.log('Validate:', input);
+			try {
+				schema.validate(input);
+				console.log('Pass');
+			}
+			catch(error) {
+				console.error(error);
+			}
+
+			// will fail
+			input = {
+				width: -5
+			};
+			console.log('Validate:', input);
+			try {
+				schema.validate(input);
+				console.log('Pass');
+			}
+			catch(error) {
+				console.error(error);
+			}
+
+			// will pass
+			input = {
+				width: 10,
+				tags: []
+			};
+			console.log('Validate:', input);
+			try {
+				schema.validate(input);
+				console.log('Pass');
+			}
+			catch(error) {
+				console.error(error);
+			}
+
+			// will fail
+			input = {
+				width: 10,
+				tags: ['test', true]
+			};
+			console.log('Validate:', input);
+			try {
+				schema.validate(input);
+				console.log('Pass');
+			}
+			catch(error) {
+				console.error(error);
+			}
+
+			// will pass
+			input = {
+				width: 10,
+				tags: ['test', 123, 'hello']
+			};
+			console.log('Validate:', input);
+			try {
+				schema.validate(input);
+				console.log('Pass');
+			}
+			catch(error) {
+				console.error(error);
+			}
+		</script>
+	</body>
+</html>

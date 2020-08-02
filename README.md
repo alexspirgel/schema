@@ -457,7 +457,7 @@ This property has no restrictions on what models it can belong to.
 
 Available values: any function that returns true on successfull validation or throws a `Schema.ValidationError` on failure.
 
-An input must be validate successfully using the custom validation function.
+An input must validate successfully using the custom validation function.
 
 ```js
 model = {

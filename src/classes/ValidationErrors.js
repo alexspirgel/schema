@@ -23,7 +23,7 @@ class ValidationErrors {
 	}
 	
 	generateFormattedMessage() {
-		let message = `Schema Errors:\n`;
+		let message = `Schema errors:\n`;
 		for (const error of this.errors) {
 			let inputPath = 'root';
 			if (error.inputPathManager.path.length > 0) {

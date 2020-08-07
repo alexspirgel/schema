@@ -378,27 +378,6 @@ model = {
 
 <details>
 
-<summary>itemSchema</summary>
-
-This property is restricted to models with a `type` property of `array`.
-
-Available values: any model.
-
-Each item of the input array must validate using the `itemSchema`.
-
-```js
-model = {
-  type: 'array',
-  itemSchema: {
-    type: 'number'
-  }
-};
-```
-
-</details>
-
-<details>
-
 <summary>instanceOf</summary>
 
 This property is restricted to models with a `type` property of `object`.
@@ -425,9 +404,30 @@ model = {
 
 <details>
 
+<summary>allPropertySchema</summary>
+
+This property is restricted to models with a `type` property of `array` or `object`.
+
+Available values: a model.
+
+Each property of the input must validate using the `allPropertySchema`.
+
+```js
+model = {
+  type: 'array',
+  allPropertySchema: {
+    type: 'number'
+  }
+};
+```
+
+</details>
+
+<details>
+
 <summary>propertySchema</summary>
 
-This property is restricted to models with a `type` property of `object`.
+This property is restricted to models with a `type` property of `array` or `object`.
 
 Available values: an object containing property and model pairs.
 
@@ -486,9 +486,11 @@ Here is an example of multiple models:
 ```js
 model = [
   {
+    require: true,
     type: 'number'
   },
   {
+    require: true,
     type: 'string'
   }
 ];

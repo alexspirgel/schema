@@ -7,27 +7,27 @@
 	<body>
 		Check the console for output.
 		<script type="text/javascript">
-		const schema = new Schema({
-					required: true,
-					type: 'object',
-					propertySchema: {
-							width: {
-									required: true,
-									type: 'number',
-									greaterThanOrEqualTo: 0
+			const schema = new Schema({
+				required: true,
+				type: 'object',
+				propertySchema: {
+					width: {
+						required: true,
+						type: 'number',
+						greaterThanOrEqualTo: 0
+					},
+					tags: {
+						type: 'array',
+						allPropertySchema: [
+							{
+								type: 'number'
 							},
-							tags: {
-									type: 'array',
-									itemSchema: [
-											{
-													type: 'number'
-											},
-											{
-													type: 'string'
-											}
-									]
+							{
+								type: 'string'
 							}
+						]
 					}
+				}
 			});
 			
 			console.log('Model:', schema.modelPathManager.value);

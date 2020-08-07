@@ -1,6 +1,7 @@
 const DataPathManager = require('./classes/DataPathManager.js');
 const ValidationError = require('./classes/ValidationError.js');
 const ValidationErrors = require('./classes/ValidationErrors.js');
+const modelModel = require('./models/model.js');
 
 class Schema {
 	
@@ -67,8 +68,8 @@ class Schema {
 				method: this.validateCustom
 			},
 			{
-				property: 'itemSchema',
-				method: this.validateItemSchema
+				property: 'allPropertySchema',
+				method: this.validateAllPropertySchema
 			},
 			{
 				property: 'propertySchema',
@@ -255,12 +256,12 @@ class Schema {
 		return modelPathManager.value(customInputPathManager);
 	}
 
-	static validateItemSchema(modelPathManager, inputPathManager) {
-		const itemSchema = new Schema(modelPathManager.clone());
-		for (let inputIndex = 0; inputIndex < inputPathManager.value.length; inputIndex++) {
-			const inputItemPathManager = inputPathManager.clone();
-			inputItemPathManager.addPathSegment(inputIndex);
-			const validationResult = itemSchema.validate(inputItemPathManager, 'array');
+	static validateAllPropertySchema(modelPathManager, inputPathManager) {
+		const allPropertySchema = new Schema(modelPathManager.clone(), false);
+		for (const property in inputPathManager.value) {
+			const inputPropertyPathManager = inputPathManager.clone();
+			inputPropertyPathManager.addPathSegment(property);
+			const validationResult = allPropertySchema.validate(inputPropertyPathManager, 'array');
 			if (validationResult !== true) {
 				return validationResult;
 			}
@@ -272,7 +273,7 @@ class Schema {
 		for (const property in modelPathManager.value) {
 			const modelPropertyPathManager = modelPathManager.clone();
 			modelPropertyPathManager.addPathSegment(property);
-			const propertySchema = new Schema(modelPropertyPathManager);
+			const propertySchema = new Schema(modelPropertyPathManager, false);
 			const inputPropertyPathManager = inputPathManager.clone();
 			inputPropertyPathManager.addPathSegment(property);
 			const validationResult = propertySchema.validate(inputPropertyPathManager, 'array');
@@ -283,7 +284,8 @@ class Schema {
 		return true;
 	}
 	
-	constructor(modelPathManager = {}) {
+	constructor(modelPathManager = {}, selfValidate = true) {
+		this.selfValidate = selfValidate;
 		this.modelPathManager = modelPathManager;
 	}
 
@@ -292,6 +294,10 @@ class Schema {
 			modelPathManager = new DataPathManager(modelPathManager);
 		}
 		this._modelPathManager = modelPathManager;
+		if (this.selfValidate) {
+			const schemaModel = new Schema(modelModel, false);
+			schemaModel.validate(this.modelPathManager);
+		}
 	}
 
 	get modelPathManager() {

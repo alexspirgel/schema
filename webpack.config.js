@@ -22,7 +22,8 @@ module.exports = [
 		],
 		optimization: {
 			minimize: false
-		}
+		},
+		watch: true
 	},
 	{
 		mode: 'production',
@@ -50,6 +51,7 @@ module.exports = [
 					}
 				})
 			]
-		}
+		},
+		watch: true
 	}
 ];

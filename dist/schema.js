@@ -1,5 +1,5 @@
 /*!
- * Schema v1.0.0
+ * Schema v1.1.0
  * https://github.com/alexspirgel/schema
  */
 var Schema =
@@ -91,6 +91,44 @@ var Schema =
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const DataPathManager = __webpack_require__(1);
+
+class ValidationError extends Error {
+	
+	constructor(...params) {
+		super(...params);
+	}
+	
+	set modelPathManager(modelPathManager) {
+		if (!(modelPathManager instanceof DataPathManager)) {
+			modelPathManager = new DataPathManager(modelPathManager);
+		}
+		this._modelPathManager = modelPathManager;
+	}
+	
+	get modelPathManager() {
+		return this._modelPathManager;
+	}
+	
+	set inputPathManager(inputPathManager) {
+		if (!(inputPathManager instanceof DataPathManager)) {
+			inputPathManager = new DataPathManager(inputPathManager);
+		}
+		this._inputPathManager = inputPathManager;
+	}
+	
+	get inputPathManager() {
+		return this._inputPathManager;
+	}
+
+};
+
+module.exports = ValidationError;
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports) {
 
 class DataPathManager {
@@ -143,50 +181,13 @@ class DataPathManager {
 module.exports = DataPathManager;
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const DataPathManager = __webpack_require__(0);
-
-class ValidationError extends Error {
-	
-	constructor(...params) {
-		super(...params);
-	}
-	
-	set modelPathManager(modelPathManager) {
-		if (!(modelPathManager instanceof DataPathManager)) {
-			modelPathManager = new DataPathManager(modelPathManager);
-		}
-		this._modelPathManager = modelPathManager;
-	}
-	
-	get modelPathManager() {
-		return this._modelPathManager;
-	}
-	
-	set inputPathManager(inputPathManager) {
-		if (!(inputPathManager instanceof DataPathManager)) {
-			inputPathManager = new DataPathManager(inputPathManager);
-		}
-		this._inputPathManager = inputPathManager;
-	}
-	
-	get inputPathManager() {
-		return this._inputPathManager;
-	}
-
-};
-
-module.exports = ValidationError;
-
-/***/ }),
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const DataPathManager = __webpack_require__(0);
-const ValidationError = __webpack_require__(1);
+const DataPathManager = __webpack_require__(1);
+const ValidationError = __webpack_require__(0);
 const ValidationErrors = __webpack_require__(3);
+const modelModel = __webpack_require__(4);
 
 class Schema {
 	
@@ -253,8 +254,8 @@ class Schema {
 				method: this.validateCustom
 			},
 			{
-				property: 'itemSchema',
-				method: this.validateItemSchema
+				property: 'allPropertySchema',
+				method: this.validateAllPropertySchema
 			},
 			{
 				property: 'propertySchema',
@@ -441,12 +442,12 @@ class Schema {
 		return modelPathManager.value(customInputPathManager);
 	}
 
-	static validateItemSchema(modelPathManager, inputPathManager) {
-		const itemSchema = new Schema(modelPathManager.clone());
-		for (let inputIndex = 0; inputIndex < inputPathManager.value.length; inputIndex++) {
-			const inputItemPathManager = inputPathManager.clone();
-			inputItemPathManager.addPathSegment(inputIndex);
-			const validationResult = itemSchema.validate(inputItemPathManager, 'array');
+	static validateAllPropertySchema(modelPathManager, inputPathManager) {
+		const allPropertySchema = new Schema(modelPathManager.clone(), false);
+		for (const property in inputPathManager.value) {
+			const inputPropertyPathManager = inputPathManager.clone();
+			inputPropertyPathManager.addPathSegment(property);
+			const validationResult = allPropertySchema.validate(inputPropertyPathManager, 'array');
 			if (validationResult !== true) {
 				return validationResult;
 			}
@@ -458,7 +459,7 @@ class Schema {
 		for (const property in modelPathManager.value) {
 			const modelPropertyPathManager = modelPathManager.clone();
 			modelPropertyPathManager.addPathSegment(property);
-			const propertySchema = new Schema(modelPropertyPathManager);
+			const propertySchema = new Schema(modelPropertyPathManager, false);
 			const inputPropertyPathManager = inputPathManager.clone();
 			inputPropertyPathManager.addPathSegment(property);
 			const validationResult = propertySchema.validate(inputPropertyPathManager, 'array');
@@ -469,7 +470,8 @@ class Schema {
 		return true;
 	}
 	
-	constructor(modelPathManager = {}) {
+	constructor(modelPathManager = {}, selfValidate = true) {
+		this.selfValidate = selfValidate;
 		this.modelPathManager = modelPathManager;
 	}
 
@@ -478,6 +480,10 @@ class Schema {
 			modelPathManager = new DataPathManager(modelPathManager);
 		}
 		this._modelPathManager = modelPathManager;
+		if (this.selfValidate) {
+			const schemaModel = new Schema(modelModel, false);
+			schemaModel.validate(this.modelPathManager);
+		}
 	}
 
 	get modelPathManager() {
@@ -572,7 +578,7 @@ module.exports = Schema;
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const ValidationError = __webpack_require__(1);
+const ValidationError = __webpack_require__(0);
 
 class ValidationErrors {
 	
@@ -597,7 +603,7 @@ class ValidationErrors {
 	}
 	
 	generateFormattedMessage() {
-		let message = `Schema Errors:\n`;
+		let message = `Schema errors:\n`;
 		for (const error of this.errors) {
 			let inputPath = 'root';
 			if (error.inputPathManager.path.length > 0) {
@@ -621,6 +627,232 @@ class ValidationErrors {
 };
 
 module.exports = ValidationErrors;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const extend = __webpack_require__(5);
+const ValidationError = __webpack_require__(0);
+
+const typeRestriction = (types) => {
+	if (!Array.isArray(types)) {
+		types = [types];
+	}
+	return (inputPathManager) => {
+		const validationProperty = inputPathManager.removePathSegment();
+		if (validationProperty === undefined || types.includes(inputPathManager.value.type)) {
+			return true;
+		}
+		else {
+			let typesString = ``;
+			for (let i = 0; i < types.length; i++) {
+				const type = types[i];
+				if (i === 0) {
+					typesString += `'${type}'`;
+				}
+				else if (i < (types.length - 1)) {
+					typesString += `, '${type}'`;
+				}
+				else {
+					if (types.length > 2) {
+						typesString += `,`;
+					}
+					typesString += ` or '${type}'`;
+				}
+			}
+			throw new ValidationError(`The validation property '${validationProperty}' can only belong to a model with a type of ${typesString}.`);
+		}
+	};
+};
+
+const modelPropertySchema = {
+	required: {
+		type: 'boolean'
+	},
+	type: {
+		type: 'string',
+		exactValue: [
+			'boolean',
+			'number',
+			'string',
+			'array',
+			'object',
+			'function'
+		]
+	},
+	exactValue: {
+		custom: typeRestriction(['boolean', 'number', 'string'])
+	},
+	greaterThan: {
+		type: 'number',
+		custom: typeRestriction('number')
+	},
+	greaterThanOrEqualTo: {
+		type: 'number',
+		custom: typeRestriction('number')
+	},
+	lessThan: {
+		type: 'number',
+		custom: typeRestriction('number')
+	},
+	lessThanOrEqualTo: {
+		type: 'number',
+		custom: typeRestriction('number')
+	},
+	divisibleBy: {
+		type: 'number',
+		custom: typeRestriction('number')
+	},
+	notDivisibleBy: {
+		type: 'number',
+		custom: typeRestriction('number')
+	},
+	minimumCharacters: {
+		type: 'string',
+		custom: typeRestriction('string')
+	},
+	maximumCharacters: {
+		type: 'string',
+		custom: typeRestriction('string')
+	},
+	minimumLength: {
+		type: 'number',
+		custom: typeRestriction('array')
+	},
+	maximumLength: {
+		type: 'number',
+		custom: typeRestriction('array')
+	},
+	instanceOf: {
+		type: 'object',
+		custom: typeRestriction('object')
+	},
+	custom: {
+		type: 'function'
+	},
+	propertySchema: {
+		type: 'object',
+		custom: typeRestriction(['array', 'object'])
+	}
+};
+
+const modelObject = {
+	type: 'object',
+	propertySchema: modelPropertySchema
+};
+
+const modelArray = {
+	type: 'array',
+	allPropertySchema: {
+		type: 'object',
+		propertySchema: modelPropertySchema
+	}
+};
+
+const model = [
+	modelObject,
+	modelArray
+];
+
+const modelTypeRestricted = [
+	extend([{}, modelObject, {custom: typeRestriction(['array', 'object'])}], true),
+	extend([{}, modelArray, {custom: typeRestriction(['array', 'object'])}], true)
+];
+
+modelPropertySchema.allPropertySchema = modelTypeRestricted;
+modelPropertySchema.propertySchema.allPropertySchema = model;
+
+module.exports = model;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * extend v2.0.4
+ * https://github.com/alexspirgel/extend
+ */
+
+/**
+ * Extends an object with another object(s).
+ *
+ * @param {array} objects - Array of objects containing the resulting object and the objects to merge into it.
+ * @param {boolean} [deep] - Optional flag to enable or disable recursive merge.
+ *
+ * @returns {object} The object that has been extended.
+ */
+
+const extend = (objects, deep) => {
+
+	/**
+	 * Extends an object with another object.
+	 *
+	 * @param {object} target_object - The target object to be merged into.
+	 * @param {object} merge_object - The object to merge into the target object.
+	 * @param {boolean} [deep] - Optional flag to enable or disable recursive merge.
+	 *
+	 * @returns {object} The object that has been extended.
+	 */
+
+	const extendObject = (target_object, merge_object, deep) => {
+		// For each property in the merge_object.
+		for (let property in merge_object) {
+			// If the merge_object value is an object, is not null, and the deep flag is true.
+			if (typeof merge_object[property] === 'object' && merge_object[property] !== null && deep) {
+				// If the merge_object value is a special case.
+				if ((typeof Window !== 'undefined' && merge_object[property] instanceof Window) || (typeof HTMLDocument !== 'undefined' && merge_object[property] instanceof HTMLDocument) || (typeof Element !== 'undefined' && merge_object[property] instanceof Element)) {
+					// Set the target_object property value equal to the merge_object property value.
+					target_object[property] = merge_object[property];
+					// Continue past the normal deep object handling.
+					continue;
+				}
+				// If the merge_object value is an array.
+				if (Array.isArray(merge_object[property]) || (typeof Nodelist !== 'undefined' && merge_object[property] instanceof NodeList)) {
+					if ((typeof Nodelist !== 'undefined' && merge_object[property] instanceof NodeList)) {
+						merge_object[property] = Array.from(merge_object[property]);
+					}
+					// Set the target_object value equal to an empty array (arrays are replaced, not merged).
+					target_object[property] = [];
+				}
+				// If the target_object value is not an object or if it is null.
+				else if (typeof target_object[property] !== 'object' || target_object[property] === null) {
+					// Set the target_object value equal to an empty object.
+					target_object[property] = {};
+				}
+				// Call the extendObject function recursively.
+				extendObject(target_object[property], merge_object[property], deep);
+				// Continue to the next property, skipping the normal value assignment.
+				continue;
+			}
+			// Set the target_object property value equal to the merge_object property value (primitive values or shallow calls).
+			target_object[property] = merge_object[property];
+		}
+		// Return the target_object.
+		return target_object;
+	}; // End function extendObject.
+
+	// If objects length is greater than 1.
+	if (objects.length > 1) {
+		// For each object in objects (skipping the first object).
+		for (let object = 1; object < objects.length; object++) {
+			// If the current loop item is an object and not null.
+			if (typeof objects[object] === 'object' && objects[object] !== null) {
+				// Extend the first object with the current loop object.
+				extendObject(objects[0], objects[object], deep);
+			}
+		}
+	}
+	// Return the first object in the array.
+	return objects[0];
+
+}; // End function extend.
+
+// If script is being required as a node module.
+if ( true && module.exports) {
+	// Export the extend function.
+	module.exports = extend;
+}
 
 /***/ })
 /******/ ]);

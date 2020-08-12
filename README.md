@@ -404,6 +404,35 @@ model = {
 
 <details>
 
+<summary>allowUnvalidatedProperties</summary>
+
+This property is restricted to models with a `type` property of `object`.
+
+Available values: any boolean.
+
+Setting `allowUnvalidatedProperties` to `false` requires every input property to have a model defined in the `propertySchema` property.
+
+Setting `allowUnvalidatedProperties` to `true` or omitting it from the model (equivalent to `undefined`) will not check if input properties are validated.
+
+```js
+model = {
+  type: 'object',
+  allowUnvalidatedProperties: false,
+  propertySchema: {
+    width: {
+      type: 'number'
+    },
+    height: {
+      type: 'number'
+    }
+  }
+};
+```
+
+</details>
+
+<details>
+
 <summary>allPropertySchema</summary>
 
 This property is restricted to models with a `type` property of `array` or `object`.

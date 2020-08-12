@@ -94,6 +94,10 @@ const modelPropertySchema = {
 		type: 'object',
 		custom: typeRestriction('object')
 	},
+	allowUnvalidatedProperties: {
+		type: 'boolean',
+		custom: typeRestriction('object')
+	},
 	custom: {
 		type: 'function'
 	},

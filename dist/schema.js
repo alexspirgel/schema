@@ -1,5 +1,5 @@
 /*!
- * Schema v1.1.0
+ * Schema v1.1.1
  * https://github.com/alexspirgel/schema
  */
 var Schema =
@@ -250,6 +250,10 @@ class Schema {
 				method: this.validateInstanceOf
 			},
 			{
+				property: 'allowUnvalidatedProperties',
+				method: this.validateAllowUnvalidatedProperties
+			},
+			{
 				property: 'custom',
 				method: this.validateCustom
 			},
@@ -435,6 +439,23 @@ class Schema {
 			}
 		}
 		throw new ValidationError(`Property 'instanceOf' validation failed. The input must be an instance of the value or one of the values in an array of values.`);
+	}
+
+	static validateAllowUnvalidatedProperties(modelPathManager, inputPathManager) {
+		if (modelPathManager.value === false) {
+			modelPathManager.removePathSegment();
+			modelPathManager.addPathSegment('propertySchema');
+			let validatedProperties = [];
+			if (modelPathManager.value) {
+				validatedProperties = Object.keys(modelPathManager.value);
+			}
+			for (const property in inputPathManager.value) {
+				if (!validatedProperties.includes(property)) {
+					throw new ValidationError(`Property 'allowUnvalidatedProperties' validation failed. '${property}' is not defined in the 'propertySchema' validation property.`);
+				}
+			}
+		}
+		return true;
 	}
 
 	static validateCustom(modelPathManager, inputPathManager) {
@@ -726,6 +747,10 @@ const modelPropertySchema = {
 	},
 	instanceOf: {
 		type: 'object',
+		custom: typeRestriction('object')
+	},
+	allowUnvalidatedProperties: {
+		type: 'boolean',
 		custom: typeRestriction('object')
 	},
 	custom: {

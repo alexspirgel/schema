@@ -58,7 +58,10 @@ const testValidators = (validatorFunction, testCases) => {
 	for (const testCase of testCases) {
 		const description = generateDescription(testCase.model, testCase.input, testCase.expected);
 		it(description, function () {
-			let model = new DataPathManager(testCase.model);
+			let model = testCase.model;
+			if (!(model instanceof DataPathManager)) {
+				model = new DataPathManager(testCase.model);
+			}
 			let input = new DataPathManager(testCase.input);
 			try {
 				const validationResult = validatorFunction(model, input);
@@ -868,5 +871,61 @@ describe('Schema', function () {
 			},
 		];
 		testValidators(Schema.validateInstanceOf, testCases);
+	});
+	describe('validateAllowUnvalidatedProperties', function () {
+		const testCases = [
+			{
+				model: new DataPathManager({}, ['allowUnvalidatedProperties']),
+				input: {a:1, b:2, c:3},
+				expected: true
+			},
+			{
+				model: new DataPathManager({allowUnvalidatedProperties: true}, ['allowUnvalidatedProperties']),
+				input: {a:1, b:2, c:3},
+				expected: true
+			},
+			{
+				model: new DataPathManager({allowUnvalidatedProperties: false}, ['allowUnvalidatedProperties']),
+				input: {a:1, b:2, c:3},
+				expected: false
+			},
+			{
+				model: new DataPathManager({
+					allowUnvalidatedProperties: false,
+					propertySchema: {
+						a: {},
+						b: {},
+						c: {}
+					}
+				}, ['allowUnvalidatedProperties']),
+				input: {a:1, b:2, c:3},
+				expected: true
+			},
+			{
+				model: new DataPathManager({
+					allowUnvalidatedProperties: false,
+					propertySchema: {
+						a: {},
+						b: {}
+					}
+				}, ['allowUnvalidatedProperties']),
+				input: {a:1, b:2, c:3},
+				expected: false
+			},
+			{
+				model: new DataPathManager({
+					allowUnvalidatedProperties: false,
+					propertySchema: {
+						a: {},
+						b: {},
+						c: {},
+						d: {}
+					}
+				}, ['allowUnvalidatedProperties']),
+				input: {a:1, b:2, c:3},
+				expected: true
+			},
+		];
+		testValidators(Schema.validateAllowUnvalidatedProperties, testCases);
 	});
 });

@@ -501,9 +501,6 @@ model = {
 };
 ```
 
-Notes:
-* Do not edit the `inputPathManager.data`. If the data is not primitive this will change the input value for the rest of the validation. This will be fixed in a future update.
-
 </details>
 
 ## Multiple Models

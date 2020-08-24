@@ -1,5 +1,5 @@
 /*!
- * Schema v1.1.1
+ * Schema v1.1.2
  * https://github.com/alexspirgel/schema
  */
 var Schema =
@@ -86,7 +86,7 @@ var Schema =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -129,7 +129,9 @@ module.exports = ValidationError;
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
+
+const extend = __webpack_require__(2);
 
 class DataPathManager {
 	
@@ -171,9 +173,34 @@ class DataPathManager {
 		}
 		return value;
 	}
-	
-	clone() {
-		return new this.constructor(this.data, [...this.path]);
+
+	clone(options = {}) {
+
+		const defaultOptions = {
+			data: false,
+			path: true
+		};
+		options = extend({}, defaultOptions, options);
+
+		let data = this.data;
+		if (options.data) {
+			if (typeof data === 'object') {
+				if (Array.isArray(data)) {
+					data = extend([], data);
+				}
+				else {
+					data = extend({}, data);
+				}
+			}
+		}
+
+		let path = this.path;
+		if (options.path) {
+			path = [...this.path];
+		}
+
+		return new this.constructor(data, path);
+
 	}
 
 };
@@ -184,10 +211,80 @@ module.exports = DataPathManager;
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
+/**
+ * Extend v3.0.0
+ * https://github.com/alexspirgel/extend
+ */
+
+const extend = (...arguments) => {
+
+	let target = arguments[0];
+	let argumentIndex, merge, mergeIsArray;
+	for (argumentIndex = 1; argumentIndex < arguments.length; argumentIndex++) {
+		merge = arguments[argumentIndex];
+		if (merge === target) {
+			continue;
+		}
+		mergeIsArray = Array.isArray(merge);
+		if (mergeIsArray || extend.isPlainObject(merge)) {
+			if (mergeIsArray && !Array.isArray(target)) {
+				target = [];
+			}
+			else if (!mergeIsArray && !extend.isPlainObject(target)) {
+				target = {};
+			}
+			for (const property in merge) {
+				if (property === "__proto__") {
+					continue;
+				}
+				target[property] = extend(target[property], merge[property]);
+			}
+		}
+		else {
+			if (merge !== undefined) {
+				target = merge;
+			}
+		}
+	}
+
+	return target;
+
+};
+
+extend.isPlainObject = (object) => {
+	const baseObject = {};
+	const toString = baseObject.toString;
+	const hasOwnProperty = baseObject.hasOwnProperty;
+	const functionToString = hasOwnProperty.toString;
+	const objectFunctionString = functionToString.call(Object);
+	if (toString.call(object) !== '[object Object]') {
+		return false;
+	}
+	const prototype = Object.getPrototypeOf(object);
+	if (prototype) {
+		if (hasOwnProperty.call(prototype, 'constructor')) {
+			if (typeof prototype.constructor === 'function') {
+				if (functionToString.call(prototype.constructor) !== objectFunctionString) {
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+};
+
+if ( true && module.exports) {
+	module.exports = extend;
+}
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
 const DataPathManager = __webpack_require__(1);
 const ValidationError = __webpack_require__(0);
-const ValidationErrors = __webpack_require__(3);
-const modelModel = __webpack_require__(4);
+const ValidationErrors = __webpack_require__(4);
+const modelModel = __webpack_require__(5);
 
 class Schema {
 	
@@ -459,7 +556,7 @@ class Schema {
 	}
 
 	static validateCustom(modelPathManager, inputPathManager) {
-		const customInputPathManager = inputPathManager.clone();
+		const customInputPathManager = inputPathManager.clone({data: true, path: true});
 		return modelPathManager.value(customInputPathManager);
 	}
 
@@ -596,7 +693,7 @@ Schema.ValidationError = ValidationError;
 module.exports = Schema;
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const ValidationError = __webpack_require__(0);
@@ -650,10 +747,10 @@ class ValidationErrors {
 module.exports = ValidationErrors;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const extend = __webpack_require__(5);
+const extend = __webpack_require__(2);
 const ValidationError = __webpack_require__(0);
 
 const typeRestriction = (types) => {
@@ -781,103 +878,14 @@ const model = [
 ];
 
 const modelTypeRestricted = [
-	extend([{}, modelObject, {custom: typeRestriction(['array', 'object'])}], true),
-	extend([{}, modelArray, {custom: typeRestriction(['array', 'object'])}], true)
+	extend({}, modelObject, {custom: typeRestriction(['array', 'object'])}),
+	extend({}, modelArray, {custom: typeRestriction(['array', 'object'])})
 ];
 
 modelPropertySchema.allPropertySchema = modelTypeRestricted;
 modelPropertySchema.propertySchema.allPropertySchema = model;
 
 module.exports = model;
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/**
- * extend v2.0.4
- * https://github.com/alexspirgel/extend
- */
-
-/**
- * Extends an object with another object(s).
- *
- * @param {array} objects - Array of objects containing the resulting object and the objects to merge into it.
- * @param {boolean} [deep] - Optional flag to enable or disable recursive merge.
- *
- * @returns {object} The object that has been extended.
- */
-
-const extend = (objects, deep) => {
-
-	/**
-	 * Extends an object with another object.
-	 *
-	 * @param {object} target_object - The target object to be merged into.
-	 * @param {object} merge_object - The object to merge into the target object.
-	 * @param {boolean} [deep] - Optional flag to enable or disable recursive merge.
-	 *
-	 * @returns {object} The object that has been extended.
-	 */
-
-	const extendObject = (target_object, merge_object, deep) => {
-		// For each property in the merge_object.
-		for (let property in merge_object) {
-			// If the merge_object value is an object, is not null, and the deep flag is true.
-			if (typeof merge_object[property] === 'object' && merge_object[property] !== null && deep) {
-				// If the merge_object value is a special case.
-				if ((typeof Window !== 'undefined' && merge_object[property] instanceof Window) || (typeof HTMLDocument !== 'undefined' && merge_object[property] instanceof HTMLDocument) || (typeof Element !== 'undefined' && merge_object[property] instanceof Element)) {
-					// Set the target_object property value equal to the merge_object property value.
-					target_object[property] = merge_object[property];
-					// Continue past the normal deep object handling.
-					continue;
-				}
-				// If the merge_object value is an array.
-				if (Array.isArray(merge_object[property]) || (typeof Nodelist !== 'undefined' && merge_object[property] instanceof NodeList)) {
-					if ((typeof Nodelist !== 'undefined' && merge_object[property] instanceof NodeList)) {
-						merge_object[property] = Array.from(merge_object[property]);
-					}
-					// Set the target_object value equal to an empty array (arrays are replaced, not merged).
-					target_object[property] = [];
-				}
-				// If the target_object value is not an object or if it is null.
-				else if (typeof target_object[property] !== 'object' || target_object[property] === null) {
-					// Set the target_object value equal to an empty object.
-					target_object[property] = {};
-				}
-				// Call the extendObject function recursively.
-				extendObject(target_object[property], merge_object[property], deep);
-				// Continue to the next property, skipping the normal value assignment.
-				continue;
-			}
-			// Set the target_object property value equal to the merge_object property value (primitive values or shallow calls).
-			target_object[property] = merge_object[property];
-		}
-		// Return the target_object.
-		return target_object;
-	}; // End function extendObject.
-
-	// If objects length is greater than 1.
-	if (objects.length > 1) {
-		// For each object in objects (skipping the first object).
-		for (let object = 1; object < objects.length; object++) {
-			// If the current loop item is an object and not null.
-			if (typeof objects[object] === 'object' && objects[object] !== null) {
-				// Extend the first object with the current loop object.
-				extendObject(objects[0], objects[object], deep);
-			}
-		}
-	}
-	// Return the first object in the array.
-	return objects[0];
-
-}; // End function extend.
-
-// If script is being required as a node module.
-if ( true && module.exports) {
-	// Export the extend function.
-	module.exports = extend;
-}
 
 /***/ })
 /******/ ]);

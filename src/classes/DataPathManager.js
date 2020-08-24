@@ -1,3 +1,5 @@
+const extend = require('@alexspirgel/extend');
+
 class DataPathManager {
 	
 	constructor(data, path = []) {
@@ -38,9 +40,34 @@ class DataPathManager {
 		}
 		return value;
 	}
-	
-	clone() {
-		return new this.constructor(this.data, [...this.path]);
+
+	clone(options = {}) {
+
+		const defaultOptions = {
+			data: false,
+			path: true
+		};
+		options = extend({}, defaultOptions, options);
+
+		let data = this.data;
+		if (options.data) {
+			if (typeof data === 'object') {
+				if (Array.isArray(data)) {
+					data = extend([], data);
+				}
+				else {
+					data = extend({}, data);
+				}
+			}
+		}
+
+		let path = this.path;
+		if (options.path) {
+			path = [...this.path];
+		}
+
+		return new this.constructor(data, path);
+
 	}
 
 };

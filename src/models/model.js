@@ -126,8 +126,8 @@ const model = [
 ];
 
 const modelTypeRestricted = [
-	extend([{}, modelObject, {custom: typeRestriction(['array', 'object'])}], true),
-	extend([{}, modelArray, {custom: typeRestriction(['array', 'object'])}], true)
+	extend({}, modelObject, {custom: typeRestriction(['array', 'object'])}),
+	extend({}, modelArray, {custom: typeRestriction(['array', 'object'])})
 ];
 
 modelPropertySchema.allPropertySchema = modelTypeRestricted;

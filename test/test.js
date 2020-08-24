@@ -928,4 +928,47 @@ describe('Schema', function () {
 		];
 		testValidators(Schema.validateAllowUnvalidatedProperties, testCases);
 	});
+	describe('simple example', function () {
+		const model = {
+			required: true,
+			type: 'number'
+		};
+		const schema = new Schema(model);
+		it('should validate true', function () {
+			if (schema.validate(0) && schema.validate(-5) && schema.validate(200)) {
+				return true;
+			}
+			throw new Error();
+		});
+		it('should validate false', function () {
+			if (!schema.validate(undefined, 'boolean') && !schema.validate(null, 'boolean') && !schema.validate('string', 'boolean')) {
+				return true;
+			}
+			throw new Error();
+		});
+	});
+	describe('custom validation function should not be able to edit the original input', function () {
+		it('should have the same input values as when it was passed', function () {
+			const model = {
+				custom: (inputPathManager) => {
+					inputPathManager.value.b = 200;
+					if (inputPathManager.value.a === 1) {
+						return true;
+					}
+					throw new ValidationError('');
+				}
+			};
+			let input = {
+				a: 1,
+				b: 2,
+				c: 3
+			}
+			const schema = new Schema(model);
+			schema.validate(input);
+			if (input.b === 2) {
+				return true;
+			}
+			throw new Error();
+		});
+	});
 });

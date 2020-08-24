@@ -273,7 +273,7 @@ class Schema {
 	}
 
 	static validateCustom(modelPathManager, inputPathManager) {
-		const customInputPathManager = inputPathManager.clone();
+		const customInputPathManager = inputPathManager.clone({data: true, path: true});
 		return modelPathManager.value(customInputPathManager);
 	}
 

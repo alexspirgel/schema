@@ -382,9 +382,9 @@ model = {
 
 This property is restricted to models with a `type` property of `object`.
 
-Available values: any object or array of objects.
+Available values: any value or array of values.
 
-An input must be an instance of the object or one of the objects in the array of objects.
+An input must be an instance of the value or one of the values in the array of values.
 
 ```js
 model = {

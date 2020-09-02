@@ -1,5 +1,5 @@
 /*!
- * Schema v1.1.2
+ * Schema v1.1.3
  * https://github.com/alexspirgel/schema
  */
 var Schema =
@@ -843,7 +843,6 @@ const modelPropertySchema = {
 		custom: typeRestriction('array')
 	},
 	instanceOf: {
-		type: 'object',
 		custom: typeRestriction('object')
 	},
 	allowUnvalidatedProperties: {

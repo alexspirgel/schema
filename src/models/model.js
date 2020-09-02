@@ -91,7 +91,6 @@ const modelPropertySchema = {
 		custom: typeRestriction('array')
 	},
 	instanceOf: {
-		type: 'object',
 		custom: typeRestriction('object')
 	},
 	allowUnvalidatedProperties: {

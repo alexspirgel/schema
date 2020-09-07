@@ -1,5 +1,5 @@
 /*!
- * Schema v1.1.3
+ * Schema v1.1.4
  * https://github.com/alexspirgel/schema
  */
 var Schema =

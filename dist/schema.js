@@ -211,13 +211,9 @@ module.exports = DataPathManager;
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/**
- * Extend v3.0.0
- * https://github.com/alexspirgel/extend
- */
+const isPlainObject = __webpack_require__(4);
 
 const extend = (...arguments) => {
-
 	let target = arguments[0];
 	let argumentIndex, merge, mergeIsArray;
 	for (argumentIndex = 1; argumentIndex < arguments.length; argumentIndex++) {
@@ -226,11 +222,11 @@ const extend = (...arguments) => {
 			continue;
 		}
 		mergeIsArray = Array.isArray(merge);
-		if (mergeIsArray || extend.isPlainObject(merge)) {
+		if (mergeIsArray || isPlainObject(merge)) {
 			if (mergeIsArray && !Array.isArray(target)) {
 				target = [];
 			}
-			else if (!mergeIsArray && !extend.isPlainObject(target)) {
+			else if (!mergeIsArray && !isPlainObject(target)) {
 				target = {};
 			}
 			for (const property in merge) {
@@ -246,36 +242,10 @@ const extend = (...arguments) => {
 			}
 		}
 	}
-
 	return target;
-
 };
 
-extend.isPlainObject = (object) => {
-	const baseObject = {};
-	const toString = baseObject.toString;
-	const hasOwnProperty = baseObject.hasOwnProperty;
-	const functionToString = hasOwnProperty.toString;
-	const objectFunctionString = functionToString.call(Object);
-	if (toString.call(object) !== '[object Object]') {
-		return false;
-	}
-	const prototype = Object.getPrototypeOf(object);
-	if (prototype) {
-		if (hasOwnProperty.call(prototype, 'constructor')) {
-			if (typeof prototype.constructor === 'function') {
-				if (functionToString.call(prototype.constructor) !== objectFunctionString) {
-					return false;
-				}
-			}
-		}
-	}
-	return true;
-};
-
-if ( true && module.exports) {
-	module.exports = extend;
-}
+module.exports = extend;
 
 /***/ }),
 /* 3 */
@@ -283,8 +253,8 @@ if ( true && module.exports) {
 
 const DataPathManager = __webpack_require__(1);
 const ValidationError = __webpack_require__(0);
-const ValidationErrors = __webpack_require__(4);
-const modelModel = __webpack_require__(5);
+const ValidationErrors = __webpack_require__(5);
+const modelModel = __webpack_require__(6);
 
 class Schema {
 	
@@ -696,6 +666,35 @@ module.exports = Schema;
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
+/**
+ * isPlainObject v1.0.1
+ * https://github.com/alexspirgel/isPlainObject
+ */
+
+const isPlainObject = (object) => {
+	if (Object.prototype.toString.call(object) !== '[object Object]') {
+		return false;
+	}
+  if (object.constructor === undefined) {
+		return true;
+	}
+  if (Object.prototype.toString.call(object.constructor.prototype) !== '[object Object]') {
+		return false;
+	}
+  if (!object.constructor.prototype.hasOwnProperty('isPrototypeOf')) {
+    return false;
+  }
+  return true;
+};
+
+if ( true && module.exports) {
+	module.exports = isPlainObject;
+}
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
 const ValidationError = __webpack_require__(0);
 
 class ValidationErrors {
@@ -747,7 +746,7 @@ class ValidationErrors {
 module.exports = ValidationErrors;
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const extend = __webpack_require__(2);

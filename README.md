@@ -27,21 +27,24 @@ Download the normal or minified script from the `/dist` folder.
 Create a schema using a model:
 
 ```js
-const schema = new Schema({
+let model = {
     type: 'number',
     greaterThan: 5
-});
+};
+let schema = new Schema(model);
 ```
 
 Use the schema to validate an input:
 
 ```js
-schema.validate(6); // returns true
+schema.validate('abc'); // fail
+schema.validate(3); // fail
+schema.validate(6); // pass
 ```
 
 You can specify an error style as the second parameter of the validate method. The error style options are:
 * `'throw'` (default) will throw a formatted error on validate failure. The message will include multiple errors when applicable.
-* `'array'` will return an array of errors on validate failure. Useful for sorting through multiple errors programatically.
+* `'array'` will return an array of errors on validate failure. Useful for sorting through multiple errors programmatically.
 * `'boolean'` will return false on validate failure.
 
 ```js
@@ -53,7 +56,7 @@ schema.validate(4, 'boolean'); // returns false
 
 More complex example:
 ```js
-const schema = new Schema({
+let schema = new Schema({
     required: true,
     type: 'object',
     propertySchema: {
@@ -114,9 +117,13 @@ Setting `required` to `true` requires an input not to be `null` or `undefined`.
 Setting `required` to `false` or omitting it from the model (equivalent to `undefined`) will not require any input. If an input is `null` or `undefined` all other model properties will be skipped and the input is valid.
 
 ```js
-model = {
+let model = {
   required: true
 };
+let schema = new Schema(model);
+schema.validate(123); // pass
+schema.validate(); // fail
+schema.validate(null); // fail
 ```
 
 </details>
@@ -132,9 +139,30 @@ Available values: `boolean`, `number`, `string`, `array`, `object`, `function`.
 An input must match the set type.
 
 ```js
-model = {
+let model = {
   type: 'boolean'
 };
+let schema = new Schema(model);
+schema.validate(true); // pass
+schema.validate(false); // pass
+schema.validate('abc'); // fail
+```
+
+You cannot define multiple allowed types in a single type property. Multiple optional type values must be declared in separate models using an array of models.
+
+```js
+let model = [
+  {
+    type: 'string'
+  },
+  {
+    type: 'number'
+  }
+];
+let schema = new Schema(model);
+schema.validate('abc'); // pass
+schema.validate(123); // pass
+schema.validate(true); // fail
 ```
 
 Notes:
@@ -157,14 +185,14 @@ Available values: any value or array of values.
 An input must match the value or one of the values in an array of values.
 
 ```js
-model = {
+let model = {
   type: 'string',
   exactValue: 'hello world'
 };
 ```
 
 ```js
-model = {
+let model = {
   type: 'number',
   exactValue: [5, 7, -12]
 };
@@ -183,7 +211,7 @@ Available values: any number.
 An input must be greater than the set number.
 
 ```js
-model = {
+let model = {
   type: 'number',
   greaterThan: 5
 };
@@ -202,7 +230,7 @@ Available values: any number.
 An input must be greater than or equal to the set number.
 
 ```js
-model = {
+let model = {
   type: 'number',
   greaterThanOrEqualTo: 5
 };
@@ -221,7 +249,7 @@ Available values: any number.
 An input must be less than the set number.
 
 ```js
-model = {
+let model = {
   type: 'number',
   lessThan: 5
 };
@@ -240,7 +268,7 @@ Available values: any number.
 An input must be less than or equal to the set number.
 
 ```js
-model = {
+let model = {
   type: 'number',
   lessThanOrEqualTo: 5
 };
@@ -259,14 +287,14 @@ Available values: any number or array of numbers.
 An input must be divisible by the set number or one of the numbers in the array of numbers.
 
 ```js
-model = {
+let model = {
   type: 'number',
   divisibleBy: 2 // even numbers
 };
 ```
 
 ```js
-model = {
+let model = {
   type: 'number',
   divisibleBy: [5, 8]
 };
@@ -285,14 +313,14 @@ Available values: any number or array of numbers.
 An input must not be divisible by the set number or any of the numbers in the array of numbers.
 
 ```js
-model = {
+let model = {
   type: 'number',
   notDivisibleBy: 2 // odd numbers
 };
 ```
 
 ```js
-model = {
+let model = {
   type: 'number',
   notDivisibleBy: [5, 8]
 };
@@ -311,7 +339,7 @@ Available values: any number.
 An input must have a character count greater than or equal to the set number.
 
 ```js
-model = {
+let model = {
   type: 'string',
   minimumCharacters: 5
 };
@@ -330,7 +358,7 @@ Available values: any number.
 An input must have a character count less than or equal to the set number.
 
 ```js
-model = {
+let model = {
   type: 'string',
   maximumCharacters: 5
 };
@@ -349,7 +377,7 @@ Available values: any number.
 An input must have length greater than or equal to the set number.
 
 ```js
-model = {
+let model = {
   type: 'array',
   minimumLength: 5
 };
@@ -368,7 +396,7 @@ Available values: any number.
 An input must have length less than or equal to the set number.
 
 ```js
-model = {
+let model = {
   type: 'array',
   maximumLength: 5
 };
@@ -387,14 +415,14 @@ Available values: any value or array of values.
 An input must be an instance of the value or one of the values in the array of values.
 
 ```js
-model = {
+let model = {
   type: 'object',
   instanceOf: Element
 };
 ```
 
 ```js
-model = {
+let model = {
   type: 'object',
   instanceOf: [Element, Error]
 };
@@ -415,7 +443,7 @@ Setting `allowUnvalidatedProperties` to `false` requires every input property to
 Setting `allowUnvalidatedProperties` to `true` or omitting it from the model (equivalent to `undefined`) will not check if input properties are validated.
 
 ```js
-model = {
+let model = {
   type: 'object',
   allowUnvalidatedProperties: false,
   propertySchema: {
@@ -442,7 +470,7 @@ Available values: a model.
 Each property of the input must validate using the `allPropertySchema`.
 
 ```js
-model = {
+let model = {
   type: 'array',
   allPropertySchema: {
     type: 'number'
@@ -463,7 +491,7 @@ Available values: an object containing property and model pairs.
 Each property of the input object must validate using the corresponding property model defined in the model.
 
 ```js
-model = {
+let model = {
   type: 'object',
   propertySchema: {
     property1: {
@@ -484,12 +512,12 @@ model = {
 
 This property has no restrictions on what models it can belong to.
 
-Available values: any function that returns true on successfull validation or throws a `Schema.ValidationError` on failure.
+Available values: any function that returns true on successful validation or throws a `Schema.ValidationError` on failure.
 
 An input must validate successfully using the custom validation function.
 
 ```js
-model = {
+let model = {
   custom: (inputPathManager) => {
     if (inputPathManager.value.includes('hello')) {
       return true;
@@ -505,21 +533,27 @@ model = {
 
 ## Multiple Models
 
-Anywhere you could use a model, you can instead use an array of models. If an input validates successfully using any of the models in the array, the validation is successfull.
+Anywhere you could use a model, you can instead choose to use an array of models. If an input validates successfully using any of the models in the array, the validation is successful.
 
-Here is an example of multiple models:
+Here is an example of using an array of models:
 
 ```js
-model = [
+let model = [
   {
-    require: true,
-    type: 'number'
+    required: true,
+    type: 'string'
   },
   {
-    require: true,
-    type: 'string'
+    required: true,
+    type: 'number'
   }
 ];
+let schema = new Schema(model);
+schema.validate('abc'); // pass
+schema.validate(123); // pass
+schema.validate(true); // fail
 ```
 
-This model allows for the input to be either a number or a string.
+This model allows for the input to be either string or a number.
+
+Note that when using an array of models, if one of the models in the array isn't required, a null or undefined value will pass validation.

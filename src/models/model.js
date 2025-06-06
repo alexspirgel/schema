@@ -1,33 +1,42 @@
 const extend = require('@alexspirgel/extend');
 const ValidationError = require('../classes/ValidationError.js');
 
-const typeRestriction = (types) => {
-	if (!Array.isArray(types)) {
-		types = [types];
+/**
+ * Returns a custom validation function which validates that a property is only allowed to be declared on certain model types.
+ * For example, the 'greaterThan' property is only allowed on a model that also has a 'type' property value of 'number'.
+ * This is needed because some properties don't make sense for all data types.
+ * @param {string|array} allowedTypes - A string or array of strings to limit the property by.
+ * @returns {function} - A custom validation function.
+ */
+const typeRestriction = (allowedTypes) => {
+	if (!Array.isArray(allowedTypes)) {
+		allowedTypes = [allowedTypes];
 	}
 	return (inputPathManager) => {
+		let allowedTypesString = ''; // Some minifiers threw an error when this line was placed within the else statement below, so the variable is declared here even though it may not always be used.
 		const validationProperty = inputPathManager.removePathSegment();
-		if (validationProperty === undefined || types.includes(inputPathManager.value.type)) {
+		// If the property is set on an allowed type.
+		if (allowedTypes.includes(inputPathManager.value.type)) {
 			return true;
 		}
+		// If the property is NOT set on an allowed type, format a helpful error string.
 		else {
-			let typesString = ``;
-			for (let i = 0; i < types.length; i++) {
-				const type = types[i];
+			for (let i = 0; i < allowedTypes.length; i++) {
+				const type = allowedTypes[i];
 				if (i === 0) {
-					typesString += `'${type}'`;
+					allowedTypesString += `'${type}'`;
 				}
-				else if (i < (types.length - 1)) {
-					typesString += `, '${type}'`;
+				else if (i < (allowedTypes.length - 1)) {
+					allowedTypesString += `, '${type}'`;
 				}
 				else {
-					if (types.length > 2) {
-						typesString += `,`;
+					if (allowedTypes.length > 2) {
+						allowedTypesString += ',';
 					}
-					typesString += ` or '${type}'`;
+					allowedTypesString += ` or '${type}'`;
 				}
 			}
-			throw new ValidationError(`The validation property '${validationProperty}' can only belong to a model with a type of ${typesString}.`);
+			throw new ValidationError(`The validation property '${validationProperty}' can only belong to a model with a type of ${allowedTypesString}.`);
 		}
 	};
 };

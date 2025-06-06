@@ -112,7 +112,7 @@ class Schema {
 				return true;
 			}
 		}
-		throw new ValidationError(`Property 'type' validation failed. The input type must match.`);
+		throw new ValidationError(`Property 'type' validation failed. The input must have a type of ${modelPathManager.value}.`);
 	}
 
 	static validateExactValue(modelPathManager, inputPathManager) {
@@ -136,7 +136,7 @@ class Schema {
 			return true;
 		}
 		else {
-			throw new ValidationError(`Property 'greaterThan' validation failed. The input must be greater than the value.`);
+			throw new ValidationError(`Property 'greaterThan' validation failed. The input must be greater than ${modelPathManager.value}.`);
 		}
 	}
 
@@ -145,7 +145,7 @@ class Schema {
 			return true;
 		}
 		else {
-			throw new ValidationError(`Property 'greaterThanOrEqualTo' validation failed. The input must be greater than or equal to the value.`);
+			throw new ValidationError(`Property 'greaterThanOrEqualTo' validation failed. The input must be greater than or equal to ${modelPathManager.value}.`);
 		}
 	}
 
@@ -154,7 +154,7 @@ class Schema {
 			return true;
 		}
 		else {
-			throw new ValidationError(`Property 'lessThan' validation failed. The input must be less than the value.`);
+			throw new ValidationError(`Property 'lessThan' validation failed. The input must be less than ${modelPathManager.value}.`);
 		}
 	}
 
@@ -163,7 +163,7 @@ class Schema {
 			return true;
 		}
 		else {
-			throw new ValidationError(`Property 'lessThanOrEqualTo' validation failed. The input must be less than or equal to the value.`);
+			throw new ValidationError(`Property 'lessThanOrEqualTo' validation failed. The input must be less than or equal to ${modelPathManager.value}.`);
 		}
 	}
 
@@ -208,7 +208,7 @@ class Schema {
 			return true;
 		}
 		else {
-			throw new ValidationError(`Property 'minimumCharacters' validation failed. The input must have a character count greater than or equal to the value.`);
+			throw new ValidationError(`Property 'minimumCharacters' validation failed. The input must have a character count greater than or equal to ${modelPathManager.value}.`);
 		}
 	}
 
@@ -217,7 +217,7 @@ class Schema {
 			return true;
 		}
 		else {
-			throw new ValidationError(`Property 'maximumCharacters' validation failed. The input must have a character count less than or equal to the value.`);
+			throw new ValidationError(`Property 'maximumCharacters' validation failed. The input must have a character count less than or equal to ${modelPathManager.value}.`);
 		}
 	}
 
@@ -226,7 +226,7 @@ class Schema {
 			return true;
 		}
 		else {
-			throw new ValidationError(`Property 'minimumLength' validation failed. The input must have a length greater than or equal to the value.`);
+			throw new ValidationError(`Property 'minimumLength' validation failed. The input must have a length greater than or equal to ${modelPathManager.value}.`);
 		}
 	}
 
@@ -235,7 +235,7 @@ class Schema {
 			return true;
 		}
 		else {
-			throw new ValidationError(`Property 'maximumLength' validation failed. The input must have a length less than or equal to the value.`);
+			throw new ValidationError(`Property 'maximumLength' validation failed. The input must have a length less than or equal to ${modelPathManager.value}.`);
 		}
 	}
 

@@ -284,7 +284,7 @@ This property is restricted to models with a `type` property of `number`.
 
 Available values: any number or array of numbers.
 
-An input must be divisible by the set number or one of the numbers in the array of numbers.
+An input must be cleanly divisible by the number or any of the numbers in the array of numbers (a number is cleanly divisible if the result is an integer without a remainder).
 
 ```js
 let model = {
@@ -296,7 +296,7 @@ let model = {
 ```js
 let model = {
   type: 'number',
-  divisibleBy: [5, 8]
+  divisibleBy: [10, 25]
 };
 ```
 
@@ -310,7 +310,7 @@ This property is restricted to models with a `type` property of `number`.
 
 Available values: any number or array of numbers.
 
-An input must not be divisible by the set number or any of the numbers in the array of numbers.
+An input must NOT be cleanly divisible by the number or any of the numbers in the array of numbers (a number is cleanly divisible if the result is an integer without a remainder).
 
 ```js
 let model = {
@@ -322,7 +322,7 @@ let model = {
 ```js
 let model = {
   type: 'number',
-  notDivisibleBy: [5, 8]
+  notDivisibleBy: [2, 5]
 };
 ```
 
@@ -461,27 +461,6 @@ let model = {
 
 <details>
 
-<summary>allPropertySchema</summary>
-
-This property is restricted to models with a `type` property of `array` or `object`.
-
-Available values: a model.
-
-Each property of the input must validate using the `allPropertySchema`.
-
-```js
-let model = {
-  type: 'array',
-  allPropertySchema: {
-    type: 'number'
-  }
-};
-```
-
-</details>
-
-<details>
-
 <summary>propertySchema</summary>
 
 This property is restricted to models with a `type` property of `array` or `object`.
@@ -500,6 +479,27 @@ let model = {
     property2: {
       type: 'string'
     }
+  }
+};
+```
+
+</details>
+
+<details>
+
+<summary>allPropertySchema</summary>
+
+This property is restricted to models with a `type` property of `array` or `object`.
+
+Available values: a model.
+
+Each property of the input must validate using the `allPropertySchema`.
+
+```js
+let model = {
+  type: 'array',
+  allPropertySchema: {
+    type: 'number'
   }
 };
 ```
@@ -557,3 +557,11 @@ schema.validate(true); // fail
 This model allows for the input to be either string or a number.
 
 Note that when using an array of models, if one of the models in the array isn't required, a null or undefined value will pass validation.
+
+## Future Changes
+
+- The `propertySchema` property should be renamed to `propertyModel`.
+- The `allPropertySchema` property should be renamed to `allPropertyModel`.
+- The `greaterThan`, `greaterThanOrEqualTo`, `minimumCharacters`, and `minimumLength` properties should be consolidated into a singular `minimum` property. It should be explained how the property functions differently depending on the `type` property.
+- The `lessThan`, `lessThanOrEqualTo`, `maximumCharacters`, and `maximumLength` properties should be consolidated into a singular `maximum` property. It should be explained how the property functions differently depending on the `type` property.
+- The `divisibleBy` and `notDivisibleBy` properties are very niche and should be removed.

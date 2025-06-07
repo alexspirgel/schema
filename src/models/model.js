@@ -1,4 +1,3 @@
-const extend = require('@alexspirgel/extend');
 const ValidationError = require('../classes/ValidationError.js');
 
 /**
@@ -84,11 +83,11 @@ const modelPropertySchema = {
 		custom: typeRestriction('number')
 	},
 	minimumCharacters: {
-		type: 'string',
+		type: 'number',
 		custom: typeRestriction('string')
 	},
 	maximumCharacters: {
-		type: 'string',
+		type: 'number',
 		custom: typeRestriction('string')
 	},
 	minimumLength: {
@@ -119,26 +118,32 @@ const modelObject = {
 	type: 'object',
 	propertySchema: modelPropertySchema
 };
-
 const modelArray = {
 	type: 'array',
-	allPropertySchema: {
-		type: 'object',
-		propertySchema: modelPropertySchema
-	}
+	allPropertySchema: modelObject
 };
-
 const model = [
 	modelObject,
 	modelArray
 ];
 
+modelPropertySchema.propertySchema.allPropertySchema = model;
+
+const modelObjectTypeRestricted = {
+	type: 'object',
+	propertySchema: modelPropertySchema,
+	custom: typeRestriction(['array', 'object'])
+};
+const modelArrayTypeRestricted = {
+	type: 'array',
+	allPropertySchema: modelObject,
+	custom: typeRestriction(['array', 'object'])
+};
 const modelTypeRestricted = [
-	extend({}, modelObject, {custom: typeRestriction(['array', 'object'])}),
-	extend({}, modelArray, {custom: typeRestriction(['array', 'object'])})
+	modelObjectTypeRestricted,
+	modelArrayTypeRestricted
 ];
 
 modelPropertySchema.allPropertySchema = modelTypeRestricted;
-modelPropertySchema.propertySchema.allPropertySchema = model;
 
 module.exports = model;

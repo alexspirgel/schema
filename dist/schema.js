@@ -1,5 +1,5 @@
 /*!
- * Schema v1.1.6
+ * Schema v1.1.7
  * https://github.com/alexspirgel/schema
  */
 var Schema =
@@ -86,7 +86,7 @@ var Schema =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -131,7 +131,7 @@ module.exports = ValidationError;
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const extend = __webpack_require__(2);
+const extend = __webpack_require__(3);
 
 class DataPathManager {
 	
@@ -209,46 +209,6 @@ module.exports = DataPathManager;
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const isPlainObject = __webpack_require__(4);
-
-const extend = (...arguments) => {
-	let target = arguments[0];
-	let argumentIndex, merge, mergeIsArray;
-	for (argumentIndex = 1; argumentIndex < arguments.length; argumentIndex++) {
-		merge = arguments[argumentIndex];
-		if (merge === target) {
-			continue;
-		}
-		mergeIsArray = Array.isArray(merge);
-		if (mergeIsArray || isPlainObject(merge)) {
-			if (mergeIsArray && !Array.isArray(target)) {
-				target = [];
-			}
-			else if (!mergeIsArray && !isPlainObject(target)) {
-				target = {};
-			}
-			for (const property in merge) {
-				if (property === "__proto__") {
-					continue;
-				}
-				target[property] = extend(target[property], merge[property]);
-			}
-		}
-		else {
-			if (merge !== undefined) {
-				target = merge;
-			}
-		}
-	}
-	return target;
-};
-
-module.exports = extend;
-
-/***/ }),
-/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const DataPathManager = __webpack_require__(1);
@@ -663,33 +623,66 @@ Schema.ValidationError = ValidationError;
 module.exports = Schema;
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/**
- * isPlainObject v1.0.1
- * https://github.com/alexspirgel/isPlainObject
- */
+const isPlainObject = __webpack_require__(4);
 
-const isPlainObject = (object) => {
-	if (Object.prototype.toString.call(object) !== '[object Object]') {
-		return false;
+const extend = (...arguments) => {
+	let target = arguments[0];
+	let argumentIndex, merge, mergeIsArray;
+	for (argumentIndex = 1; argumentIndex < arguments.length; argumentIndex++) {
+		merge = arguments[argumentIndex];
+		if (merge === target) {
+			continue;
+		}
+		mergeIsArray = Array.isArray(merge);
+		if (mergeIsArray || isPlainObject(merge)) {
+			if (mergeIsArray && !Array.isArray(target)) {
+				target = [];
+			}
+			else if (!mergeIsArray && !isPlainObject(target)) {
+				target = {};
+			}
+			for (const property in merge) {
+				if (property === "__proto__") {
+					continue;
+				}
+				target[property] = extend(target[property], merge[property]);
+			}
+		}
+		else {
+			if (merge !== undefined) {
+				target = merge;
+			}
+		}
 	}
-  if (object.constructor === undefined) {
-		return true;
-	}
-  if (Object.prototype.toString.call(object.constructor.prototype) !== '[object Object]') {
-		return false;
-	}
-  if (!object.constructor.prototype.hasOwnProperty('isPrototypeOf')) {
-    return false;
-  }
-  return true;
+	return target;
 };
 
-if ( true && module.exports) {
-	module.exports = isPlainObject;
+module.exports = extend;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+function isPlainObject(value) {
+	if (typeof value !== 'object' ||
+	value === null ||
+	Object.prototype.toString.call(value) !== '[object Object]') {
+		return false;
+	}
+	if (Object.getPrototypeOf(value) === null) {
+    return true;
+  }
+	let prototype = value;
+  while (Object.getPrototypeOf(prototype) !== null) {
+    prototype = Object.getPrototypeOf(prototype);
+  }
+  return Object.getPrototypeOf(value) === prototype;
 }
+
+module.exports = isPlainObject;
 
 /***/ }),
 /* 5 */
@@ -749,7 +742,6 @@ module.exports = ValidationErrors;
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const extend = __webpack_require__(2);
 const ValidationError = __webpack_require__(0);
 
 /**
@@ -835,11 +827,11 @@ const modelPropertySchema = {
 		custom: typeRestriction('number')
 	},
 	minimumCharacters: {
-		type: 'string',
+		type: 'number',
 		custom: typeRestriction('string')
 	},
 	maximumCharacters: {
-		type: 'string',
+		type: 'number',
 		custom: typeRestriction('string')
 	},
 	minimumLength: {
@@ -870,27 +862,33 @@ const modelObject = {
 	type: 'object',
 	propertySchema: modelPropertySchema
 };
-
 const modelArray = {
 	type: 'array',
-	allPropertySchema: {
-		type: 'object',
-		propertySchema: modelPropertySchema
-	}
+	allPropertySchema: modelObject
 };
-
 const model = [
 	modelObject,
 	modelArray
 ];
 
+modelPropertySchema.propertySchema.allPropertySchema = model;
+
+const modelObjectTypeRestricted = {
+	type: 'object',
+	propertySchema: modelPropertySchema,
+	custom: typeRestriction(['array', 'object'])
+};
+const modelArrayTypeRestricted = {
+	type: 'array',
+	allPropertySchema: modelObject,
+	custom: typeRestriction(['array', 'object'])
+};
 const modelTypeRestricted = [
-	extend({}, modelObject, {custom: typeRestriction(['array', 'object'])}),
-	extend({}, modelArray, {custom: typeRestriction(['array', 'object'])})
+	modelObjectTypeRestricted,
+	modelArrayTypeRestricted
 ];
 
 modelPropertySchema.allPropertySchema = modelTypeRestricted;
-modelPropertySchema.propertySchema.allPropertySchema = model;
 
 module.exports = model;
 

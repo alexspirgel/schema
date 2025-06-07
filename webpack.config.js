@@ -1,3 +1,6 @@
+/**
+ * Tested and working on node v20.19.2
+ */
 const path = require('path');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
